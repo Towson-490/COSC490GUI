@@ -1,0 +1,11 @@
+{
+  "name": "eletron",
+  "version": "1.0.0",
+  "main": "main.js",
+  "devDependencies": {
+    "electron": "^8.0.2"
+  },
+  "scripts": {
+    "start": "electron ."
+  }
+}
