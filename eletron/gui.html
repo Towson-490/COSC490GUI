@@ -10,10 +10,10 @@
 <body>
 <div id="websiteText">
     <label for="lname">Website:</label><br>
-    <input type="text" id="lname" name="lname">
+    <input type="text" id="url" name="url">
 </div>
 
-<button type="button" onclick="addChild()">Append Child</button>
+<button id="append" type="button" onclick="http('/init')">Append Child</button>
 
 <div id="website">
 
@@ -29,7 +29,7 @@
         <button id="testCreation">Create Test!</button>
         <button id="testRest">Clear Task!</button>
         <button id="testStart">Start Test!</button>
-        <button id="testStop">Stop Test!</button>
+        <button id="testStop" onclick="http('/quit')">Stop Test!</button>
     </ul>
     </div>
 </footer>
