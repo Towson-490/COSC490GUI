@@ -3,13 +3,14 @@
   "version": "1.0.0",
   "main": "main.js",
   "scripts": {
-    "start": "electron ."
+    "start": "electron .",
+    "dev": "(cd py && python api.py) & npm start"
   },
   "dependencies": {
-    "python-shell": "^1.0.8",
-    "zerorpc": "git+https://github.com/0rpc/zerorpc-node.git"
+    "python-shell": "^1.0.8"
   },
   "devDependencies": {
-    "electron": "^8.1.0"
+    "electron": "^8.1.0",
+    "electron-builder": "^22.4.0"
   }
 }
