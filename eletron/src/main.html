@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <title>Usability Testing</title>
+  <link rel="stylesheet" href="../styles.css">
+  <script>require('./main.js')</script>
+</head>
+
+<body>
+  <div id="websiteUrl">
+    <label for="websiteUrl">Website Url:</label><br>
+    <input type="text" id="url" name="url">
+  </div>
+  
+  <script type="text/javascript" src="./main.js"></script>
+  <button id="createTest" onclick="callAddWindow()">Create Test</button>
+
+  <div id="website">
+    <p>Hello</p>
+  </div>
+</body>
+
+<footer>
+  <hr>
+  <div class="relative">
+    <ul>
+      <button id="createTest" onclick="http('/init')">Create</button>
+      <button id="clearTest">Clear</button>
+      <button id="startTest">Start</button>
+      <button id="StopTest" onclick="http('/quit')">Stop</button>
+    </ul>
+  </div>
+</footer>
+
+</html>

@@ -4,7 +4,8 @@ import os
 import time
 import platform
 from selenium import webdriver
-from selenium.common.exceptions import StaleElementReferenceException
+
+from helpers import webHelper
 
 app = Flask(__name__)
 
@@ -53,64 +54,31 @@ def quit_driver():
 
 @app.route('/save_source')
 def save_source(address, source):
-    name = address.replace('.', '-') + '.html'
-    path = './data/' + name
-
-    if os.path.exists(path):
-        return 'page exists'
-    else:
-        f = open(path, 'w')
-        f.write(source)
-        f.close()
-        return 'page created'
+    return webHelper.save_source(address, source)
 
 # Stale Element Exception is raised if wait is not provided
 # Need to find a better method than sleep()
 @app.route('/get_fonts')
 def get_element_fonts(selector):
     global driver
-    elements = driver.find_elements_by_css_selector(selector)
-    fonts = []
-    for i, e in enumerate(elements):
-        try:
-            if e.value_of_css_property('display') != "none":
-                font_family = map(str.strip, e.value_of_css_property('font-family').split(","))
-                fonts.extend(font_family)
-        except StaleElementReferenceException as e:
-            print(e)
-    fonts = list(set(fonts))
+    fonts = webHelper.get_element_fonts(driver, selector)
     print(fonts)
     print("Number of fonts (including fallbacks): ", len(fonts))
 
 
 @app.route('/get_html')
-def get_inner_html():  # incomplete
+def get_inner_html():
     global driver
-    elements = driver.find_elements_by_css_selector("*")
-    text = ""
-    for i, e in enumerate(elements):
-        try:
-            if e.value_of_css_property('display') != "none":
-                inner = driver.execute_script("return arguments[0].textContent", e)
-                text = text + " " + inner
-        except StaleElementReferenceException as e:
-            print(e)
+    text = webHelper.get_inner_html(driver)
     print(text)
 
 
 @app.route('/get_colors')
 def get_element_colors():
     global driver
-    elements = driver.find_elements_by_css_selector("*")
-    colors = []
-    for i, e in enumerate(elements):
-        try:
-            if e.value_of_css_property('display') != "none":
-                inner = driver.execute_script("return arguments[0].textContent", e)
-                text = text + " " + inner
-        except StaleElementReferenceException as e:
-            print(e)
+    colors = webHelper.get_element_colors(driver)
     print(colors)
+
 
 
 if __name__ == "__main__":

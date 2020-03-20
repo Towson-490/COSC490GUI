@@ -18,7 +18,8 @@ button {
     border-radius: 5px;
     color: rgba(7, 99, 53, 1);
     cursor: pointer;
-    line-height: 40px;
+    line-height: 35px;
+    width: fit-content;
     font-size: 30px;
     outline: none;
     padding: 0 20px;
