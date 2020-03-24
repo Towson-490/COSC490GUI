@@ -58,10 +58,6 @@ function createMainWindow() {
         slashes: true,
     }));
 
-    ipcMain.on('add-window', (e) => {
-        createAddWindow();
-    })
-
     // entry.loadURL(appurl);
 
     // Quit app when closed
@@ -126,6 +122,9 @@ if (process.env.NODE_ENV != 'production') {
     });
 }
 
+ipcMain.on('add-window', (e) => {
+    createAddWindow();
+})
 // Handle create add window
 function createAddWindow() {
     // Create new window

@@ -1,7 +1,6 @@
-const remote = require('electron').remote;
-const ipcRenderer = require('electron').ipcRenderer;
+var { ipcRenderer } = require('electron');
 
-const url = "http://127.0.0.1:5000";
+var url = "http://127.0.0.1:5000";
 function http(end) {
     var xhttp = new XMLHttpRequest();
     xhttp.onreadystatechange = function () {
