@@ -2,8 +2,8 @@ console.log('main process working');
 
 require('electron-reload')(__dirname);
 const { app, BrowserWindow, Menu, ipcMain } = require('electron');
-const path = require("path");
-const url = require("url");
+const path = require('path');
+const url = require('url');
 
 /**Resource path:: Uncomment after testing  */
 //var pathF = path.resolve(process.resourcesPath, './py/dist/api/api.exe'); //<---Executable python server path
@@ -31,13 +31,13 @@ app.on('ready', function () {
     Menu.setApplicationMenu(mainMenu);
 });
 
-app.on("window-all-closed", () => {
+app.on('window-all-closed', () => {
     if (process.platform !== "darwin") {
         app.quit();
     }
 });
 
-app.on("activate", () => {
+app.on('activate', () => {
     if (mainWindow === null) {
         createMainWindow();
     }
@@ -61,7 +61,7 @@ function createMainWindow() {
     // entry.loadURL(appurl);
 
     // Quit app when closed
-    mainWindow.on("closed", () => {
+    mainWindow.on('closed', () => {
         mainWindow = null;
 
         // Close the open server
@@ -70,6 +70,42 @@ function createMainWindow() {
         }
 
         app.quit();
+    });
+}
+
+ipcMain.on('add-test', function (e, data) {
+    mainWindow.webContents.send('add-test', data);
+    addTestWindow.close();
+});
+
+ipcMain.on('add-window', (e) => {
+    createAddWindow();
+});
+// Handle create add window
+function createAddWindow() {
+    // Create new window
+    addTestWindow = new BrowserWindow({
+        webPreferences: {
+            nodeIntegration: true
+        },
+        parent: mainWindow,
+        modal: true,
+        frame: true,
+        width: 300,
+        height: 400,
+        title: 'Add Test'
+    });
+
+    // Load html file into window
+    addTestWindow.loadURL(url.format({
+        pathname: path.join(__dirname, 'src/addTest.html'),
+        protocol: 'file',
+        slashes: true,
+    }));
+
+    // Quit window when closed
+    addTestWindow.on('closed', () => {
+        addTestWindow = null;
     });
 }
 
@@ -119,37 +155,6 @@ if (process.env.NODE_ENV != 'production') {
                 role: 'reload'
             }
         ]
-    });
-}
-
-ipcMain.on('add-window', (e) => {
-    createAddWindow();
-})
-// Handle create add window
-function createAddWindow() {
-    // Create new window
-    addTestWindow = new BrowserWindow({
-        webPreferences: {
-            nodeIntegration: true
-        },
-        parent: mainWindow,
-        modal: true,
-        frame: true,
-        width: 300,
-        height: 200,
-        title: 'Add Test'
-    });
-
-    // Load html file into window
-    addTestWindow.loadURL(url.format({
-        pathname: path.join(__dirname, 'src/addTest.html'),
-        protocol: 'file',
-        slashes: true,
-    }));
-
-    // Quit app when closed
-    addTestWindow.on("closed", () => {
-        addTestWindow = null;
     });
 }
 

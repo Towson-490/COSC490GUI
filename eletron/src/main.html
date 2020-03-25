@@ -14,8 +14,11 @@
     <input type="text" id="url" name="url">
   </div>
   
-  <script type="text/javascript" src="./main.js"></script>
   <button id="createTest" onclick="callAddWindow()">Create Test</button>
+
+  <div id="tests">
+
+  </div>
 </body>
 
 <footer>
@@ -24,7 +27,7 @@
     <ul>
       <button id="createTest" onclick="http('/init')">Create</button>
       <button id="clearTest">Clear</button>
-      <button id="startTest">Start</button>
+      <button id="startTest" onclick="chooseTest()">Start</button>
       <button id="StopTest" onclick="http('/quit')">Stop</button>
     </ul>
   </div>

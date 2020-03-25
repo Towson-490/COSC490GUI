@@ -11,11 +11,30 @@
 <body>
   <form>
     <div>
-      <label>Enter Test Label</label>
-      <input type="text" id="test" autofocus>
+      <label>Enter Test Label:</label><br>
+      <input type="text" id="test-label" value="TestName" autofocus onclick="this.select()"><br>
+      <label>Choose tests to run:</label><br>
+      <input type="checkbox" name="all-tests" id="all" value="all_tests" checked onclick="allChecked()">
+      <label for="all-tests">Run all tests</label><br>
+      <input type="checkbox" name="test" value="get_fonts">
+      <label for="test">Get page fonts</label><br>
+      <input type="checkbox" name="test" value="get_html">
+      <label for="test">Get page text</label><br>
+      <input type="checkbox" name="test" value="get_colors">
+      <label for="test">Get page colors</label><br>
     </div>
-    <button type = "submit">add item</button>
+    <button type = "submit" onclick="getCheckedBoxes(event)">Add Test</button>
   </form>
+  <script>
+    allTests = document.getElementsByName('test'); 
+    allTests.forEach(test => {
+      test.addEventListener('click', function () {
+        if (document.getElementById('all').checked) {
+          document.getElementById('all').checked = false;
+        }
+      });
+    });
+  </script>
 </body>
 
 </html>
