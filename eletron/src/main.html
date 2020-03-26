@@ -13,7 +13,7 @@
     <label for="websiteUrl">Website Url:</label><br>
     <input type="text" id="url" name="url">
   </div>
-  
+  <br>
   <button id="createTest" onclick="callAddWindow()">Create Test</button>
 
   <div id="tests">
@@ -25,9 +25,8 @@
   <hr>
   <div class="relative">
     <ul>
-      <button id="createTest" onclick="http('/init')">Create</button>
       <button id="clearTest">Clear</button>
-      <button id="startTest" onclick="chooseTest()">Start</button>
+      <button id="startTest" onclick="callTests()">Start</button>
       <button id="StopTest" onclick="http('/quit')">Stop</button>
     </ul>
   </div>

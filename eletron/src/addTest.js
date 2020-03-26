@@ -30,8 +30,8 @@ function allChecked(){
   savedTests = []
   if(allCheckbox.checked){
     allTests = document.getElementsByName('test');
-      allTests.forEach(test => {
-        test.checked = false;
-      });
+    allTests.forEach(test => {
+      test.checked = false;
+    });
     }  
 }

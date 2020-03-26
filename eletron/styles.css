@@ -1,14 +1,16 @@
-
 body{
-    background: mintcream;
+    background: Gainsboro;
+    text-align: center;
+    min-width: 50%;
 }
 
-div.relative {
+.relative {
+    overflow: hidden;
     position: fixed;
-    width: 50%;
-    bottom: 5px;
-    margin: 0;
+    width: 100%;
+    bottom: 0;
 }
+
 div.testChoice:hover {
     background: rgba(7, 99, 53, 1);
     color: rgba(255,255,255,1);
@@ -18,17 +20,13 @@ div.testChoice:hover {
     color: rgba(255,255,255,1);
 }
 
-body {
-    text-align: center;
-}
 button {
     background: rgba(7, 99, 53, .1);
     border: 3px solid rgba(7, 99, 53, 1);
     border-radius: 5px;
     color: rgba(7, 99, 53, 1);
     cursor: pointer;
-    line-height: 35px;
-    width: fit-content;
+    line-height: 40px;
     font-size: 30px;
     outline: none;
     padding: 0 20px;
@@ -56,5 +54,5 @@ ul{
     margin: 0;
     padding: 0;
     overflow: hidden;
-    background-color: #333333;
+    background-color: transparent;
 }

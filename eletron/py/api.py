@@ -31,19 +31,20 @@ def initiate_driver():
     else:
         driver = webdriver.Chrome()
 
-    return ("initiated")
+    return "initiated"
 
-@app.route('/get', methods=['POST'])
+@app.route('/get', methods=['GET'])
 def get_url():
     global driver
     driver.get("https://www.towson.edu")
     time.sleep(5)
+    return "webpage contacted"
     
 @app.route('/quit', methods=['GET'])
 def quit_driver():
     global driver
     driver.quit()
-    return ("stopped")
+    return "stopped"
 
 ## Sample test
 # time.sleep(5)  # let the user actually see something!
@@ -52,18 +53,21 @@ def quit_driver():
 # search_box.submit()
 # time.sleep(5) # let the user actually see something!
 
-@app.route('/save_source')
+@app.route('/save_source', methods=['GET'])
 def save_source(address, source):
     return webHelper.save_source(address, source)
 
 # Stale Element Exception is raised if wait is not provided
 # Need to find a better method than sleep()
-@app.route('/get_fonts')
-def get_element_fonts(selector):
+@app.route('/get_fonts', methods=['GET'])
+# def get_element_fonts(selector):
+def get_element_fonts():
     global driver
+    selector = "*"
     fonts = webHelper.get_element_fonts(driver, selector)
     print(fonts)
     print("Number of fonts (including fallbacks): ", len(fonts))
+    return {"data": fonts}
 
 
 @app.route('/get_html')
@@ -71,6 +75,7 @@ def get_inner_html():
     global driver
     text = webHelper.get_inner_html(driver)
     print(text)
+    return(text)
 
 
 @app.route('/get_colors')
@@ -78,8 +83,7 @@ def get_element_colors():
     global driver
     colors = webHelper.get_element_colors(driver)
     print(colors)
-
-
+    return (colors)
 
 if __name__ == "__main__":
     app.run(host='127.0.0.1', port=5000, debug=True)
