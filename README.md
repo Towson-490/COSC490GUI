@@ -4,6 +4,7 @@
     npm install
 2) py directory:
     in env: pip install required packages
+        pip install -r requirements.txt
 3) To run:
     in py directory: run api.py server
     in eletron directory: npm start
