@@ -31,20 +31,20 @@ def initiate_driver():
     else:
         driver = webdriver.Chrome()
 
-    return "initiated"
+    return {"data": "initiated", "result": "success"}
 
 @app.route('/get', methods=['GET'])
 def get_url():
     global driver
     driver.get("https://www.towson.edu")
     time.sleep(5)
-    return "webpage contacted"
+    return {"data": "webpage contacted", "result": "success"}
     
 @app.route('/quit', methods=['GET'])
 def quit_driver():
     global driver
     driver.quit()
-    return "stopped"
+    return {"data": "stopped", "result": "success"}
 
 ## Sample test
 # time.sleep(5)  # let the user actually see something!
@@ -65,9 +65,8 @@ def get_element_fonts():
     global driver
     selector = "*"
     fonts = webHelper.get_element_fonts(driver, selector)
-    print(fonts)
-    print("Number of fonts (including fallbacks): ", len(fonts))
-    return {"data": fonts}
+    result = "Number of fonts (including fallbacks): " + str(len(fonts))
+    return {"data": " ".join(fonts), "result": result}
 
 
 @app.route('/get_html')
@@ -75,7 +74,7 @@ def get_inner_html():
     global driver
     text = webHelper.get_inner_html(driver)
     print(text)
-    return(text)
+    return {"data": text, "result": ""}
 
 
 @app.route('/get_colors')
@@ -83,7 +82,19 @@ def get_element_colors():
     global driver
     colors = webHelper.get_element_colors(driver)
     print(colors)
-    return (colors)
+    return {"data": " ".join(colors), "result": ""}
+
+@app.route('/test')
+def test():
+    global driver
+    print(initiate_driver())
+    print(get_url())
+    colors = webHelper.get_element_colors(driver)
+    print(colors)
+    print(quit_driver())
+    return {"data": colors, "result": ""}
+
+
 
 if __name__ == "__main__":
     app.run(host='127.0.0.1', port=5000, debug=True)

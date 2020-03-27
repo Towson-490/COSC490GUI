@@ -9,7 +9,7 @@ initiated = false
         var xhttp = new XMLHttpRequest();
         xhttp.onreadystatechange = function () {
             if (this.readyState == 4 && this.status == 200) {
-                resolve(this.responseText);
+                resolve(JSON.parse(this.responseText))
             }
         };
         xhttp.open("GET", url + end, true);
@@ -51,19 +51,28 @@ async function callTests(){
     if(clicked){
         var result = "";
         if(!initiated){
+            console.log("Initializing Driver");
             result = await http('/init');
             console.log(result);
-            result
+            console.log("Getting Webpage");
+            result = await http('/get');
+            console.log(result);
         }
         
         var tests = []
         for(var i = 0; i < clicked.childNodes.length; i ++ ){
             var node = clicked.childNodes[i];
             if(node.nodeName == "#text"){
-                tests.push(node.data.trim());
-                result = await http('/' + node.data.trim())
+                test = node.data.trim()
+                tests.push(test);
+                console.log("Running Test for " + test);
+                result = await http('/' + test)
+                alert("Data Found: " + result.data + "\nResult: " + result.result);
             }
         }
+        console.log("Ending Test");
+        result = await http('/quit');
+        console.log(result)
     }else{
         alert("Must pick test to run");
     }

@@ -43,14 +43,22 @@ def get_inner_html(driver):  # incomplete
 
 
 def get_element_colors(driver):
-    elements = driver.find_elements_by_css_selector("*")
-    colors = []
-    for i, e in enumerate(elements):
-        try:
-            if e.value_of_css_property('display') != "none":
-                inner = driver.execute_script("return arguments[0].textContent", e)
-                text = text + " " + inner
-        except StaleElementReferenceException as e:
-            print(e)
+    element = driver.find_element_by_tag_name("body")
+    text_colors = []
+    color = element.value_of_css_property('color')
+    print(str(color))
+    #color = "".join(element.value_of_css_property('color'))
+    text_colors.extend(color)
 
-    return colors
+    # elements = driver.find_elements_by_css_selector("*")
+    # text_colors = []
+    # for i, e in enumerate(elements):
+    #     try:
+    #         if e.value_of_css_property('display') != "none":
+    #             #text_color =  map(str.strip, e.value_of_css_property('color').split(")"))
+    #             #text_colors.extend(text_color)
+    #             text_colors.extend("".join(e.value_of_css_property('color')))
+    #     except StaleElementReferenceException as e:
+    #         print(e)
+
+    return text_colors
