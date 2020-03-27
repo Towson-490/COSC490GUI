@@ -121,7 +121,6 @@ def get_nogo_text():
     inner_text = webHelper.get_inner_html(driver)
     print(inner_text)
 
-    time.sleep(5)
     if len(inner_text) > 0:
         return {"data": " ".join(inner_text), "result": "Fail", "desc": "No-go words were found"}
     else:
