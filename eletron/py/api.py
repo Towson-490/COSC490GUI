@@ -112,46 +112,62 @@ def get_nogo_colors(choice):
             return {"data": "None", "result": "Pass", "desc": "No No-go colors were found"}
 
 inner_text = None
+###############################################
 
-@app.route('/get_html') # not finished
-def get_inner_html():
+@app.route('/get_nogo_text/text')
+def get_nogo_text():
     global driver
     global inner_text
-
     inner_text = webHelper.get_inner_html(driver)
     print(inner_text)
-    return {"data": inner_text, "result": ""}
 
-@app.route('/get_nogo_text/<choice>') # Need get_inner_html
-def get_nogo_text(choice):
-    global inner_text
-    global driver
-    
-    if choice == "text":
-    #     if inner_text is None:
-    #         inner_text = webHelper.get_inner_html(driver)
-
-    #     text = webHelper.nogo_colors('noGoText.txt', inner_text) 
-        text = "INCOMPLETE: Disregard"
-
-    
-
-    if text == "error":
-        return {"data": text, "result": "Fail", "desc": "noGoText.txt file not found"}
+    time.sleep(5)
+    if len(inner_text) > 0:
+        return {"data": " ".join(inner_text), "result": "Fail", "desc": "No-go words were found"}
     else:
-        if text:
-            return {"data": " ".join(text), "result": "Fail", "desc": "No-go text was found"}
-        else:
-            return {"data": "None", "result": "Pass", "desc": "No No-go text was found"}
+        return {"data": "None", "result": "Pass", "desc": "No No-go colors were found"}
+#######################################################
+# @app.route('/get_nogo_text/<choice>') # Need get_inner_html
+# def get_nogo_text(choice):
+#     global inner_text
+#     global driver
+    
+#     if choice == "text":
+#     #     if inner_text is None:
+#     #         inner_text = webHelper.get_inner_html(driver)
+
+#     #     text = webHelper.nogo_colors('noGoText.txt', inner_text) 
+#         text = "INCOMPLETE: Disregard"
+
+#     if text == "error":
+#         return {"data": text, "result": "Fail", "desc": "noGoText.txt file not found"}
+#     else:
+#         if text:
+#             return {"data": " ".join(text), "result": "Fail", "desc": "No-go text was found"}
+#         else:
+#             return {"data": "None", "result": "Pass", "desc": "No No-go text was found"}
+
+@app.route('/get_avg_response')
+def get_avg_response():
+    global driver
+    global background_colors
+
+    response = webHelper.check_response(driver)
+    avg = sum(response) / len(response)
+    accept = 5
+    result = "Pass" if avg < accept else "Fail"
+    desc = "Acceptable average"
+    return {"data": avg, "result": result, "desc": desc}
+
 
 @app.route('/test')
 def test():
     global driver
     print(initiate_driver())
     print(get_url())
-    
-    
+    response = webHelper.check_response(driver)
     print(quit_driver())
+    return {"data": response[:3]}
     
 
 

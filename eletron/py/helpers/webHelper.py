@@ -1,7 +1,10 @@
 from selenium.common.exceptions import StaleElementReferenceException
+
 from bs4 import BeautifulSoup
 from bs4.element import Comment
 import urllib.request
+import nltk
+# pip uninstall nltk-3.4.5 singledispatch-3.4.0.3 six-1.14.0 bs4
 
 def save_source(address, source):
   name = address.replace('.', '-') + '.html'
@@ -29,7 +32,7 @@ def get_element_fonts(driver, selector):
   
   return list(set(fonts))
 
-
+###########################################################################
 def get_inner_html(driver):  # incomplete
   # elements = driver.find_elements_by_css_selector("*")
   # text = ""
@@ -42,7 +45,40 @@ def get_inner_html(driver):  # incomplete
   #         print(e)
 
   # return text
-  pass
+  words = []
+  html = urllib.request.urlopen('https://www.towson.edu/').read()
+  # puts the text into a file
+  tokenizer = nltk.sent_tokenize(str(text_from_html(html)))
+  html_file = open("html_file.txt", "w+")
+  html_file.write(str(tokenizer))
+  bad_words_list = ['news','YOU','WHERE','stupid'] # enter trigger words here
+  count = 0
+  with open('html_file.txt','r') as file: # iterates over the list and checks it against the file
+      reader = file.read()
+      for lst in bad_words_list:
+          if lst.casefold() in reader.casefold():
+              words.append(lst)
+              print("Trigger word found: '" + lst + "' shows up on the website")
+              count += 1
+          else:
+              print('false')
+
+  return list(set(words))
+
+# finds the elements
+def tag_visible(element):
+    if element.parent.name in ['style', 'script', 'head', 'title', 'meta', '[document]']:
+        return False
+    if isinstance(element, Comment):
+        return False
+    return True
+# turns the html into text
+def text_from_html(body):
+    soup = BeautifulSoup(body, 'html.parser')
+    texts = soup.findAll(text = True)
+    visible_texts = filter(tag_visible, texts)
+    return u" ".join(t.strip() for t in visible_texts)
+#############################################################
 
 def get_text_colors(driver):
   elements = driver.find_elements_by_css_selector("*")
@@ -84,7 +120,37 @@ def nogo_search(file_name, lst):
     return "error"
 
   return None if len(found)==0 else found
-  
+
+def check_response(driver):
+  elements = driver.find_elements_by_css_selector('a')
+  hrefs = []
+  times = []
+  for i, e in enumerate(elements):
+      try:
+          if e.value_of_css_property('display') != "none":
+              href = e.get_attribute("href")
+              hrefs.append(href)
+              print(href)
+      except StaleElementReferenceException as e:
+          print(e)
+
+  for href in hrefs[0]:
+    driver.get(href)
+ 
+    ''' Use Navigation Timing  API to calculate the timings that matter the most '''   
+    
+    navigationStart = driver.execute_script("return window.performance.timing.navigationStart")
+    responseStart = driver.execute_script("return window.performance.timing.responseStart")
+    domComplete = driver.execute_script("return window.performance.timing.domComplete")
+    
+    ''' Calculate the performance'''
+    backendPerformance_calc = responseStart - navigationStart
+    frontendPerformance_calc = domComplete - responseStart
+    times.append(backendPerformance_calc)
+    times.append(frontendPerformance_calc)
+    
+    time.sleep(5)
+  return times
 
 
 def get_location(driver):
