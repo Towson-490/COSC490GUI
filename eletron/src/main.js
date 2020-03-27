@@ -53,6 +53,9 @@ async function callTests(){
         if(!initiated){
             console.log("Initializing Driver");
             result = await http('/init');
+            if (result.result == "success"){
+                initiated = true
+            }
             console.log(result);
             console.log("Getting Webpage");
             result = await http('/get');
@@ -67,13 +70,26 @@ async function callTests(){
                 tests.push(test);
                 console.log("Running Test for " + test);
                 result = await http('/' + test)
-                alert("Data Found: " + result.data + "\nResult: " + result.result);
+                alert("Data Found:\n" + result.data + "\n\nResult:\n" + result.result + "\n\nDescription:\n" + result.desc);
             }
         }
+
         console.log("Ending Test");
         result = await http('/quit');
         console.log(result)
+        alert("Testing Finished & Processes Stopped")
     }else{
         alert("Must pick test to run");
     }
+}
+
+function clearTests(){
+    const allTests = document.getElementById('tests');
+    allTests.innerHTML = ""
+    count = 0
+}
+
+function stopTests(){
+    http('/quit');
+    initiated = false;
 }

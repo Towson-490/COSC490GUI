@@ -17,12 +17,16 @@
       <input type="checkbox" name="all-tests" id="all" value="all_tests" checked onclick="allChecked()">
       <label for="all-tests">Run all tests</label><br>
       <input type="checkbox" name="test" value="get_fonts">
-      <label for="test">Get page fonts</label><br>
-      <input type="checkbox" name="test" value="get_html">
-      <label for="test">Get page text</label><br>
-      <input type="checkbox" name="test" value="get_colors">
-      <label for="test">Get page colors</label><br>
-    </div>
+      <label for="test">Get page fonts: Test consistency</label><br>
+      <input type="checkbox" name="test" value="get_nogo_text/text">
+      <label for="test">Get page text: Test terms to avoid</label><br>
+      <input type="checkbox" name="test" value="get_text_colors">
+      <label for="test">Get text colors: Test consistency</label><br>
+      <input type="checkbox" name="test" value="get_background_colors">
+      <label for="test">Get background colors: Test consistency</label><br>
+      <input type="checkbox" name="test" value="get_nogo_colors/background">
+      <label for="test">Get background colors: Test colors to avoid</label><br>
+    </div><br>
     <button type = "submit" onclick="getCheckedBoxes(event)">Add Test</button>
   </form>
   <script>

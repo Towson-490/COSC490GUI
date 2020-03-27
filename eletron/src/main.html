@@ -10,7 +10,7 @@
 
 <body>
   <div id="websiteUrl">
-    <label for="websiteUrl">Website Url:</label><br>
+    <label for="websiteUrl">Website Url:</label>
     <input type="text" id="url" name="url">
   </div>
   <br>
@@ -25,9 +25,9 @@
   <hr>
   <div class="relative">
     <ul>
-      <button id="clearTest">Clear</button>
+      <button id="clearTest" onclick="clearTests()">Clear</button>
       <button id="startTest" onclick="callTests()">Start</button>
-      <button id="StopTest" onclick="http('/quit')">Stop</button>
+      <button id="StopTest" onclick="stopTests()">Stop</button>
     </ul>
   </div>
 </footer>

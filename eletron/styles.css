@@ -40,6 +40,10 @@ p {
     font-size: 20px;
     font-weight: bold;
 }
+input {
+    margin-top: .5em;
+    margin-bottom: .5em;
+}
 hr {
     display: block;
     margin-top: 0.5em;
