@@ -121,7 +121,7 @@ def nogo_search(file_name, lst):
 
   return None if len(found)==0 else found
 
-def check_response(driver):
+def check_response(driver): # https://www.lambdatest.com/blog/how-to-measure-page-load-times-with-selenium/
   elements = driver.find_elements_by_css_selector('a')
   hrefs = []
   times = []

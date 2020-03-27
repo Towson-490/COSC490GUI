@@ -4,6 +4,7 @@ import os
 import time
 import platform
 from selenium import webdriver
+from selenium.webdriver.chrome.options import Options
 
 from helpers import webHelper
 
@@ -18,11 +19,13 @@ driver = None
 @app.route('/init', methods=['GET'])
 def initiate_driver():
     global driver
+    chrome_options = Options()
+    chrome_options.add_argument("--headless")
     # Check Chrome version to download appropriate binaries
     # Add binaries to directory (drivers) and specify executable path in Chrome()
     if platform.system() == "Windows":
-        driver = webdriver.Chrome(
-            executable_path='drivers/chromedriver_win32/chromedriver.exe')  # optional argument, if not specified will search path.
+        driver = webdriver.Chrome(chrome_options=chrome_options, executable_path='drivers/chromedriver_win32/chromedriver.exe')  
+            # executable_path:optional argument, if not specified will search path.
     elif platform.system() == 'Linux':
         driver = webdriver.Chrome(executable_path='drivers/chromedriver.exe')
     elif platform.system() == 'Darwin':
