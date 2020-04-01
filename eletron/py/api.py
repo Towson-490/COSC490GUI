@@ -16,11 +16,12 @@ def hello_world():
 
 driver = None
     
-@app.route('/init', methods=['GET'])
-def initiate_driver():
+@app.route('/init/headless=<headless>', methods=['GET'])
+def initiate_driver(headless):
     global driver
     chrome_options = Options()
-    chrome_options.add_argument("--headless")
+    if headless == "true":
+        chrome_options.add_argument("--headless")
     # Check Chrome version to download appropriate binaries
     # Add binaries to directory (drivers) and specify executable path in Chrome()
     if platform.system() == "Windows":
