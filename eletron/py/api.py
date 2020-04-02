@@ -1,7 +1,7 @@
 import sys
 from flask import Flask
 import os
-import time
+from time import sleep
 import platform
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
@@ -15,17 +15,19 @@ def hello_world():
     return ('Hello, World!')
 
 driver = None
-    
+
 @app.route('/init/headless=<headless>', methods=['GET'])
 def initiate_driver(headless):
     global driver
     chrome_options = Options()
+    chrome_options.add_argument("--log-level=3")
+    chrome_options.add_argument("--window-size=500,500")
     if headless == "true":
         chrome_options.add_argument("--headless")
     # Check Chrome version to download appropriate binaries
     # Add binaries to directory (drivers) and specify executable path in Chrome()
     if platform.system() == "Windows":
-        driver = webdriver.Chrome(chrome_options=chrome_options, executable_path='drivers/chromedriver_win32/chromedriver.exe')  
+        driver = webdriver.Chrome(options=chrome_options, executable_path='drivers/chromedriver_win32/chromedriver.exe')  
             # executable_path:optional argument, if not specified will search path.
     elif platform.system() == 'Linux':
         driver = webdriver.Chrome(executable_path='drivers/chromedriver.exe')
@@ -36,11 +38,12 @@ def initiate_driver(headless):
 
     return {"data": "initiated", "result": "success"}
 
+# Must be called before other functions
 @app.route('/get', methods=['GET'])
 def get_url():
     global driver
     driver.get("https://www.towson.edu")
-    time.sleep(5)
+    sleep(5)
     return {"data": "webpage contacted", "result": "success"}
     
 @app.route('/quit', methods=['GET'])
@@ -50,11 +53,11 @@ def quit_driver():
     return {"data": "stopped", "result": "success"}
 
 ## Sample test
-# time.sleep(5)  # let the user actually see something!
+# sleep(5)  # let the user actually see something!
 # search_box = driver.find_element_by_name('q')
 # search_box.send_keys('chromedriver')
 # search_box.submit()
-# time.sleep(5) # let the user actually see something!
+# sleep(5) # let the user actually see something!
 
 @app.route('/save_source', methods=['GET'])
 def save_source(address, source):
@@ -72,7 +75,7 @@ def get_element_fonts():
     return {"data": " ".join(fonts), "result": result, "desc": desc}
 
 
-@app.route('/get_text_colors')
+@app.route('/get_text_colors', methods=['GET'])
 def get_text_colors():
     global driver
     colors = webHelper.get_text_colors(driver)
@@ -82,7 +85,7 @@ def get_text_colors():
 
 background_colors = None
 
-@app.route('/get_background_colors')
+@app.route('/get_background_colors', methods=['GET'])
 def get_background_colors():
     global driver
     global background_colors
@@ -96,7 +99,7 @@ def quantitativeAnalysis(passNum, arr):
     desc = "Number of Different font colors: " + str(len(arr)) + "\nAcceptable Number: " + str(passNum)
     return result, desc
 
-@app.route('/get_nogo_colors/<choice>')
+@app.route('/get_nogo_colors/<choice>', methods=['GET'])
 def get_nogo_colors(choice):
     global background_colors
     global driver
@@ -118,7 +121,7 @@ def get_nogo_colors(choice):
 inner_text = None
 ###############################################
 
-@app.route('/get_nogo_text/text')
+@app.route('/get_nogo_text/text', methods=['GET'])
 def get_nogo_text():
     global driver
     global inner_text
@@ -150,30 +153,41 @@ def get_nogo_text():
 #         else:
 #             return {"data": "None", "result": "Pass", "desc": "No No-go text was found"}
 
-@app.route('/get_avg_response')
+# Makes sense for headless mode to be set to true
+@app.route('/get_avg_response', methods=['GET'])
 def get_avg_response():
     global driver
-    global background_colors
 
-    response = webHelper.check_response(driver)
-    avg = sum(response) / len(response)
-    accept = 5
-    result = "Pass" if avg < accept else "Fail"
+    backend_performance, frontend_performance = webHelper.check_response(driver)
+
+    print(backend_performance, frontend_performance)
+
+    backend_avg = sum(backend_performance) / len(backend_performance)
+    frontend_avg = sum(frontend_performance) / len(frontend_performance)
+
+    backend_accept = 2000
+    frontend_accept = 2000
+
+    backend_result ="backend:" + "Pass" if backend_avg < backend_accept else "Fail"
+    frontend_result ="frontend:" + "Pass" if frontend_avg < frontend_accept else "Fail"
+
+    backend_avg = str("backend: %dms" % backend_avg)
+    frontend_avg = str("frontend: %dms" % frontend_avg)
+
     desc = "Acceptable average"
-    return {"data": avg, "result": result, "desc": desc}
+
+    return {"data": [backend_avg, frontend_avg], "result": [backend_result, frontend_result], "desc": desc}
 
 
 @app.route('/test')
 def test():
     global driver
-    print(initiate_driver())
+    print(initiate_driver("true"))
     print(get_url())
-    response = webHelper.check_response(driver)
+    response = get_avg_response()
     print(quit_driver())
-    return {"data": response[:3]}
+    return response
     
-
-
 
 if __name__ == "__main__":
     app.run(host='127.0.0.1', port=5000, debug=True)

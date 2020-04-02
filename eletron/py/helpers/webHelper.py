@@ -1,4 +1,5 @@
 from selenium.common.exceptions import StaleElementReferenceException
+from time import sleep
 
 from bs4 import BeautifulSoup
 from bs4.element import Comment
@@ -124,33 +125,35 @@ def nogo_search(file_name, lst):
 def check_response(driver): # https://www.lambdatest.com/blog/how-to-measure-page-load-times-with-selenium/
   elements = driver.find_elements_by_css_selector('a')
   hrefs = []
-  times = []
+  backend_performance = []
+  frontend_performance = []
   for i, e in enumerate(elements):
       try:
           if e.value_of_css_property('display') != "none":
               href = e.get_attribute("href")
               hrefs.append(href)
-              print(href)
       except StaleElementReferenceException as e:
           print(e)
 
-  for href in hrefs[0]:
+  for href in hrefs[0:3]:
     driver.get(href)
+    sleep(10)
  
-    ''' Use Navigation Timing  API to calculate the timings that matter the most '''   
-    
+    # Use Navigation Timing  API to calculate the timings
+    # Methods return time in milliseconds    
     navigationStart = driver.execute_script("return window.performance.timing.navigationStart")
     responseStart = driver.execute_script("return window.performance.timing.responseStart")
     domComplete = driver.execute_script("return window.performance.timing.domComplete")
     
-    ''' Calculate the performance'''
+    # Calculate the performance
     backendPerformance_calc = responseStart - navigationStart
     frontendPerformance_calc = domComplete - responseStart
-    times.append(backendPerformance_calc)
-    times.append(frontendPerformance_calc)
+
+    # Add times to the lists
+    backend_performance.append(backendPerformance_calc)
+    frontend_performance.append(frontendPerformance_calc)
     
-    time.sleep(5)
-  return times
+  return backend_performance, frontend_performance
 
 
 def get_location(driver):
