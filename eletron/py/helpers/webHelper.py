@@ -7,6 +7,17 @@ import urllib.request
 import nltk
 # pip uninstall nltk-3.4.5 singledispatch-3.4.0.3 six-1.14.0 bs4
 
+##################################################### 
+#                   Sample test                     #
+# sleep(5)  # let the user actually see something!  #
+# search_box = driver.find_element_by_name('q')     #
+# search_box.send_keys('chromedriver')              #
+# search_box.submit()                               #
+# sleep(5) # let the user actually see something!   #
+#                                                   #
+#####################################################
+
+# Save webpage html to local directory
 def save_source(address, source):
   name = address.replace('.', '-') + '.html'
   path = './data/' + name
@@ -19,7 +30,7 @@ def save_source(address, source):
       f.close()
       return 'page created'
 
-
+# Get elements on page, find unique fonts
 def get_element_fonts(driver, selector):
   elements = driver.find_elements_by_css_selector(selector)
   fonts = []
@@ -34,6 +45,7 @@ def get_element_fonts(driver, selector):
   return list(set(fonts))
 
 ###########################################################################
+#                         ***FIX***
 def get_inner_html(driver):  # incomplete
   # elements = driver.find_elements_by_css_selector("*")
   # text = ""
@@ -79,8 +91,10 @@ def text_from_html(body):
     texts = soup.findAll(text = True)
     visible_texts = filter(tag_visible, texts)
     return u" ".join(t.strip() for t in visible_texts)
-#############################################################
+#                              ***FIX***
+############################################################################
 
+# Get elemets, find unique colors
 def get_text_colors(driver):
   elements = driver.find_elements_by_css_selector("*")
   text_colors = []
@@ -94,6 +108,7 @@ def get_text_colors(driver):
 
   return list(set(text_colors))
 
+# Get elements, find unique background colors
 def get_background_colors(driver):
   elements = driver.find_elements_by_css_selector("*")
   background_colors = []
@@ -109,6 +124,7 @@ def get_background_colors(driver):
 
   return list(set(background_colors))
 
+# Compare list to entries in NoGo file
 def nogo_search(file_name, lst):
   found = []
   try:
@@ -122,6 +138,7 @@ def nogo_search(file_name, lst):
 
   return None if len(found)==0 else found
 
+# Get links on page, run links and record frontend/backend response times compared to navigation start
 def check_response(driver): # https://www.lambdatest.com/blog/how-to-measure-page-load-times-with-selenium/
   elements = driver.find_elements_by_css_selector('a')
   hrefs = []
@@ -155,6 +172,6 @@ def check_response(driver): # https://www.lambdatest.com/blog/how-to-measure-pag
     
   return backend_performance, frontend_performance
 
-
+# Get locations of elements across domain
 def get_location(driver):
     pass
