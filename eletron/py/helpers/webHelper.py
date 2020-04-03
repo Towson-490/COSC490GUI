@@ -108,14 +108,11 @@ def get_background_colors(driver):
   elements = driver.find_elements_by_css_selector("*")
   background_colors = []
   
-  for i, e in enumerate(elements):
-      try:
-          if e.value_of_css_property('display') != "none":
-              background_color = e.value_of_css_property("background-color")
-              background_colors.append(background_color)
-              # ADD FOR PROPERTY:background
-      except StaleElementReferenceException as e:
-          print(e)
+  try:
+    [ background_colors.append(e.value_of_css_property('background-color')) for e in elements ]
+    # 'background' property may contain a set color as well as other properties
+  except StaleElementReferenceException as e:
+      print(e)
 
   return list(set(background_colors))
 
@@ -139,13 +136,11 @@ def check_response(driver): # https://www.lambdatest.com/blog/how-to-measure-pag
   hrefs = []
   backend_performance = []
   frontend_performance = []
-  for i, e in enumerate(elements):
-      try:
-          if e.value_of_css_property('display') != "none":
-              href = e.get_attribute("href")
-              hrefs.append(href)
-      except StaleElementReferenceException as e:
-          print(e)
+
+  try:
+    [ hrefs.append(e.get_attribute("href")) for e in elements ]
+  except StaleElementReferenceException as e:
+      print(e)
 
   for href in hrefs[0:3]:
     driver.get(href)
@@ -158,12 +153,9 @@ def check_response(driver): # https://www.lambdatest.com/blog/how-to-measure-pag
     domComplete = driver.execute_script("return window.performance.timing.domComplete")
     
     # Calculate the performance
-    backendPerformance_calc = responseStart - navigationStart
-    frontendPerformance_calc = domComplete - responseStart
-
     # Add times to the lists
-    backend_performance.append(backendPerformance_calc)
-    frontend_performance.append(frontendPerformance_calc)
+    backend_performance.append(responseStart - navigationStart)
+    frontend_performance.append(domComplete - responseStart)
     
   return backend_performance, frontend_performance
 

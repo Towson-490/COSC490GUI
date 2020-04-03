@@ -215,7 +215,7 @@ def test():
     print(get_url())
 
     start = time()
-    response = webHelper.get_text_colors(driver)
+    print(webHelper.check_response(driver))
     print(time() - start)
 
     print(quit_driver())
