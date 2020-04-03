@@ -1,5 +1,6 @@
 from selenium.common.exceptions import StaleElementReferenceException
-from time import sleep
+from time import sleep, time
+
 
 from bs4 import BeautifulSoup
 from bs4.element import Comment
@@ -31,19 +32,15 @@ def save_source(address, source):
       return 'page created'
 
 # Get elements on page, find unique fonts
-def get_element_fonts(driver, selector):
-  elements = driver.find_elements_by_css_selector(selector)
+def get_element_fonts(driver):
+  elements = driver.find_elements_by_css_selector("*")
   fonts = []
-  for i, e in enumerate(elements):
-      try:
-          if e.value_of_css_property('display') != "none":
-              font_family = map(str.strip, e.value_of_css_property('font-family').split(","))
-              fonts.extend(font_family)
-      except StaleElementReferenceException as e:
-          print(e)
-  
+  try:
+    [ fonts.extend(map(str.strip, e.value_of_css_property('font-family').split(","))) for e in elements ]
+  except StaleElementReferenceException as e:
+      print(e)
   return list(set(fonts))
-
+    
 ###########################################################################
 #                         ***FIX***
 def get_inner_html(driver):  # incomplete
@@ -98,13 +95,11 @@ def text_from_html(body):
 def get_text_colors(driver):
   elements = driver.find_elements_by_css_selector("*")
   text_colors = []
-  for i, e in enumerate(elements):
-      try:
-          if e.value_of_css_property('display') != "none":
-              text_color =  e.value_of_css_property('color')
-              text_colors.append(text_color)
-      except StaleElementReferenceException as e:
-          print(e)
+
+  try:
+    [ text_colors.append(e.value_of_css_property('color')) for e in elements ]
+  except StaleElementReferenceException as e:
+      print(e)
 
   return list(set(text_colors))
 
@@ -175,3 +170,7 @@ def check_response(driver): # https://www.lambdatest.com/blog/how-to-measure-pag
 # Get locations of elements across domain
 def get_location(driver):
     pass
+
+# Check for entry validity configuration
+def entry_validation_check(driver):
+  pass

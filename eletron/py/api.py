@@ -1,7 +1,7 @@
 import sys
 from flask import Flask
 import os
-from time import sleep
+from time import sleep, time
 import platform
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
@@ -22,7 +22,7 @@ app = Flask(__name__)
 def hello_world():
     return ('Hello, World!')
 
-# Initialize driver globally: 'global driver' to be used in methods
+# Initialize driver globally: 'global driver' to be used in definitions
 driver = None
 
 # Initialize chrome driver
@@ -51,6 +51,9 @@ def initiate_driver(headless):
         driver = webdriver.Chrome(executable_path='drivers/chromedriver')
     else:
         driver = webdriver.Chrome()
+
+    # Poll DOM for 2 seconds for locating elements
+    driver.implicitly_wait(2)
 
     return {"data": "initiated", "result": "success"}
 
@@ -85,8 +88,7 @@ def save_source(address, source):
 # def get_element_fonts(selector):
 def get_element_fonts():
     global driver
-    selector = "*"
-    fonts = webHelper.get_element_fonts(driver, selector)
+    fonts = webHelper.get_element_fonts(driver)
     result, desc = quantitativeAnalysis(6, fonts)
     return {"data": " ".join(fonts), "result": result, "desc": desc}
 
@@ -211,9 +213,13 @@ def test():
     global driver
     print(initiate_driver("true"))
     print(get_url())
-    response = get_avg_response()
+
+    start = time()
+    response = webHelper.get_text_colors(driver)
+    print(time() - start)
+
     print(quit_driver())
-    return response
+    return ""
     
 
 if __name__ == "__main__":
