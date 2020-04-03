@@ -75,7 +75,7 @@ def quit_driver():
     global driver
 
     driver.quit()
-
+  
     return {"data": "stopped", "result": "success"}
 
 # Save document of source to inspect locally
@@ -85,20 +85,22 @@ def save_source(address, source):
 
 # Get the unique fonts of elements
 @app.route('/get_fonts', methods=['GET'])
-# def get_element_fonts(selector):
 def get_element_fonts():
     global driver
+
     fonts = webHelper.get_element_fonts(driver)
     result, desc = quantitativeAnalysis(6, fonts)
+
     return {"data": " ".join(fonts), "result": result, "desc": desc}
 
 # Get unique text colors on page
 @app.route('/get_text_colors', methods=['GET'])
 def get_text_colors():
     global driver
+
     colors = webHelper.get_text_colors(driver)
-    print(colors)
     result, desc = quantitativeAnalysis(10, colors)
+
     return {"data": " ".join(colors), "result": result, "desc": desc}
 
 # initialize to be used globally
@@ -112,12 +114,14 @@ def get_background_colors():
 
     background_colors = webHelper.get_background_colors(driver)
     result, desc = quantitativeAnalysis(10, background_colors)
+
     return {"data": " ".join(background_colors), "result": result, "desc": desc}
 
 # Get quantitative analysis of similar definitions to determine pass/fail
 def quantitativeAnalysis(passNum, arr):
     result = "Pass" if len(arr) <= passNum else "Fail"
     desc = "Number of Different font colors: " + str(len(arr)) + "\nAcceptable Number: " + str(passNum)
+
     return result, desc
 
 # Get whether colors used are included in NoGoColors.txt
@@ -132,6 +136,9 @@ def get_nogo_colors(choice):
 
         colors = webHelper.nogo_search('noGoColors.txt', background_colors) 
 
+    if choice == "text":
+        pass
+
     if colors == "error":
         return {"data": colors, "result": "Fail", "desc": "noGoColors.txt file not found"}
     else:
@@ -142,21 +149,20 @@ def get_nogo_colors(choice):
 
 inner_text = None
 ###############################################
-
 #                   ***FIX***
 @app.route('/get_nogo_text/text', methods=['GET'])
 def get_nogo_text():
     global driver
     global inner_text
+
     inner_text = webHelper.get_inner_html(driver)
-    print(inner_text)
 
     if len(inner_text) > 0:
         return {"data": " ".join(inner_text), "result": "Fail", "desc": "No-go words were found"}
     else:
         return {"data": "None", "result": "Pass", "desc": "No No-go colors were found"}
 
-# @app.route('/get_nogo_text/<choice>') # Need get_inner_html
+# @app.route('/get_nogo_text/<choice>')
 # def get_nogo_text(choice):
 #     global inner_text
 #     global driver
@@ -211,14 +217,16 @@ def get_avg_response():
 @app.route('/test')
 def test():
     global driver
+
     print(initiate_driver("true"))
     print(get_url())
 
     start = time()
-    print(webHelper.check_response(driver))
+    print(get_background_colors())
     print(time() - start)
 
     print(quit_driver())
+
     return ""
     
 

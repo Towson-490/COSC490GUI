@@ -35,10 +35,12 @@ def save_source(address, source):
 def get_element_fonts(driver):
   elements = driver.find_elements_by_css_selector("*")
   fonts = []
+
   try:
     [ fonts.extend(map(str.strip, e.value_of_css_property('font-family').split(","))) for e in elements ]
   except StaleElementReferenceException as e:
       print(e)
+
   return list(set(fonts))
     
 ###########################################################################
@@ -94,10 +96,9 @@ def text_from_html(body):
 # Get elemets, find unique colors
 def get_text_colors(driver):
   elements = driver.find_elements_by_css_selector("*")
-  text_colors = []
 
   try:
-    [ text_colors.append(e.value_of_css_property('color')) for e in elements ]
+    text_colors = [ e.value_of_css_property('color') for e in elements ]
   except StaleElementReferenceException as e:
       print(e)
 
@@ -106,10 +107,9 @@ def get_text_colors(driver):
 # Get elements, find unique background colors
 def get_background_colors(driver):
   elements = driver.find_elements_by_css_selector("*")
-  background_colors = []
   
   try:
-    [ background_colors.append(e.value_of_css_property('background-color')) for e in elements ]
+    background_colors = [ e.value_of_css_property('background-color') for e in elements ]
     # 'background' property may contain a set color as well as other properties
   except StaleElementReferenceException as e:
       print(e)
@@ -124,7 +124,6 @@ def nogo_search(file_name, lst):
       for line in f:
         if line in lst:
           found.append(line)
-    
   except:
     return "error"
 
@@ -133,18 +132,18 @@ def nogo_search(file_name, lst):
 # Get links on page, run links and record frontend/backend response times compared to navigation start
 def check_response(driver): # https://www.lambdatest.com/blog/how-to-measure-page-load-times-with-selenium/
   elements = driver.find_elements_by_css_selector('a')
-  hrefs = []
   backend_performance = []
   frontend_performance = []
 
   try:
-    [ hrefs.append(e.get_attribute("href")) for e in elements ]
+    # www.towson.edu for test purposes, will be supplied by domain specified in test
+    hrefs = [ e.get_attribute("href") for e in elements if "towson.edu" in e.get_attribute("href") ]
   except StaleElementReferenceException as e:
       print(e)
 
+  # limit: 3 set for test purposes, limit to be supplied by test args
   for href in hrefs[0:3]:
     driver.get(href)
-    sleep(10)
  
     # Use Navigation Timing  API to calculate the timings
     # Methods return time in milliseconds    
@@ -156,12 +155,14 @@ def check_response(driver): # https://www.lambdatest.com/blog/how-to-measure-pag
     # Add times to the lists
     backend_performance.append(responseStart - navigationStart)
     frontend_performance.append(domComplete - responseStart)
+
+    sleep(10)
     
   return backend_performance, frontend_performance
 
 # Get locations of elements across domain
 def get_location(driver):
-    pass
+  pass
 
 # Check for entry validity configuration
 def entry_validation_check(driver):
