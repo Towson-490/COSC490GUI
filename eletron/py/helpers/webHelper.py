@@ -1,6 +1,7 @@
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
-from selenium.common.exceptions import StaleElementReferenceException
+from selenium.common.exceptions import StaleElementReferenceException, TimeoutException
+from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 import platform, os
@@ -25,8 +26,10 @@ import nltk
 driver = None
 
 # Initialize and return driver
-def initialize_driver(headless):
+def initialize_driver(headless, capabilities=None):
   global driver
+  kwargs = { }
+  executable_path = None
   # Create ChomeOptions object to configure driver
   chrome_options = Options()
   # Limit console loggin in headless mode
@@ -36,18 +39,25 @@ def initialize_driver(headless):
   if headless == "true":
       # Set headless mode if route arg is set to true
       chrome_options.add_argument("--headless")
+  
+  kwargs['options'] = chrome_options
 
   # Check Chrome version to download appropriate binaries
   # Add binaries to directory (drivers) and specify executable path in Chrome()
   # Executable_path:optional argument, if not specified will search path.
   if platform.system() == "Windows":
-      driver = webdriver.Chrome(options=chrome_options, executable_path='drivers/chromedriver_win32/chromedriver.exe')  
+      executable_path='drivers/chromedriver_win32/chromedriver.exe'
   elif platform.system() == 'Linux':
-      driver = webdriver.Chrome(executable_path='drivers/chromedriver.exe')
+      executable_path='drivers/chromedriver.exe'
   elif platform.system() == 'Darwin':
-      driver = webdriver.Chrome(executable_path='drivers/chromedriver')
-  else:
-      driver = webdriver.Chrome()
+      executable_path='drivers/chromedriver'
+
+  if executable_path:
+    kwargs['executable_path'] = executable_path
+  if capabilities:
+    kwargs['desired_capabilities'] = capabilities
+
+  driver = webdriver.Chrome(**kwargs)
 
   # Poll DOM for 2 seconds for locating elements
   driver.implicitly_wait(2)
@@ -216,17 +226,31 @@ def check_response(): # https://www.lambdatest.com/blog/how-to-measure-page-load
 # Check system status response for delayed results
 def check_system_status():
   global driver
+  start_url = driver.current_url
+
+  
+
   # Throttle network speed to simulate delayed system response
   driver.set_network_conditions(
     offline=False,
     latency=10000,  # additional latency (ms)
     download_throughput=100 * 1024,  # maximal throughput
-    upload_throughput=100 * 1024)  # maximal throughput
+    upload_throughput=100 * 1024   # maximal throughput
+    )  
 
   link = driver.find_elements_by_css_selector('a')
-  print(link[10].get_attribute("href"))
-  # page objects?
+  link = link[10].get_attribute("href")
+  print(link)
 
+  wait = WebDriverWait(driver, 10)
+  # driver.get(link)
+  try:
+    driver.execute_script("window.alert('alert')")
+    wait.until(EC.alert_is_present())
+  except TimeoutException:
+    return "No system delay status response"
+  finally:
+    driver.get(start_url)
   return driver.get_network_conditions()
 
 # Check for entry validity configuration

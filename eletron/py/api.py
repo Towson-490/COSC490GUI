@@ -174,7 +174,7 @@ def get_avg_response():
 @app.route('/test')
 def test():
 
-    print(initiate_driver("true"))
+    print(initiate_driver("false"))
     print(get_url())
 
     start = time()
