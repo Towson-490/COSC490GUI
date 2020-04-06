@@ -1,7 +1,10 @@
+from selenium import webdriver
+from selenium.webdriver.chrome.options import Options
 from selenium.common.exceptions import StaleElementReferenceException
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
+import platform, os
 from time import sleep, time
-
-
 from bs4 import BeautifulSoup
 from bs4.element import Comment
 import urllib.request
@@ -18,6 +21,35 @@ import nltk
 #                                                   #
 #####################################################
 
+# Initialize and return driver
+def initialize_driver(headless):
+  # Create ChomeOptions object to configure driver
+    chrome_options = Options()
+    # Limit console loggin in headless mode
+    chrome_options.add_argument("--log-level=3")
+    chrome_options.add_argument("--window-size=500,500")
+
+    if headless == "true":
+        # Set headless mode if route arg is set to true
+        chrome_options.add_argument("--headless")
+
+    # Check Chrome version to download appropriate binaries
+    # Add binaries to directory (drivers) and specify executable path in Chrome()
+    # Executable_path:optional argument, if not specified will search path.
+    if platform.system() == "Windows":
+        driver = webdriver.Chrome(options=chrome_options, executable_path='drivers/chromedriver_win32/chromedriver.exe')  
+    elif platform.system() == 'Linux':
+        driver = webdriver.Chrome(executable_path='drivers/chromedriver.exe')
+    elif platform.system() == 'Darwin':
+        driver = webdriver.Chrome(executable_path='drivers/chromedriver')
+    else:
+        driver = webdriver.Chrome()
+
+    # Poll DOM for 2 seconds for locating elements
+    driver.implicitly_wait(2)
+    
+    return driver
+
 # Save webpage html to local directory
 def save_source(address, source):
   name = address.replace('.', '-') + '.html'
@@ -30,7 +62,7 @@ def save_source(address, source):
       f.write(source)
       f.close()
       return 'page created'
-
+      
 # Get elements on page, find unique fonts
 def get_element_fonts(driver):
   elements = driver.find_elements_by_css_selector("*")
@@ -160,9 +192,20 @@ def check_response(driver): # https://www.lambdatest.com/blog/how-to-measure-pag
     
   return backend_performance, frontend_performance
 
-# Get locations of elements across domain
-def get_location(driver):
-  pass
+# Check system status response for delayed results
+def check_system_status(driver):
+  # Throttle network speed to simulate delayed system response
+  driver.set_network_conditions(
+    offline=False,
+    latency=10000,  # additional latency (ms)
+    download_throughput=100 * 1024,  # maximal throughput
+    upload_throughput=100 * 1024)  # maximal throughput
+
+  link = driver.find_elements_by_css_selector('a')
+  print(link[10].get_attribute("href"))
+  # page objects?
+
+  return driver.get_network_conditions()
 
 # Check for entry validity configuration
 def entry_validation_check(driver):

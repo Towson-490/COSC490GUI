@@ -1,10 +1,6 @@
 import sys
 from flask import Flask
-import os
 from time import sleep, time
-import platform
-from selenium import webdriver
-from selenium.webdriver.chrome.options import Options
 
 from helpers import webHelper
 
@@ -30,30 +26,7 @@ driver = None
 def initiate_driver(headless):
     global driver
 
-    # Create ChomeOptions object to configure driver
-    chrome_options = Options()
-    # Limit console loggin in headless mode
-    chrome_options.add_argument("--log-level=3")
-    chrome_options.add_argument("--window-size=500,500")
-
-    if headless == "true":
-        # Set headless mode if route arg is set to true
-        chrome_options.add_argument("--headless")
-
-    # Check Chrome version to download appropriate binaries
-    # Add binaries to directory (drivers) and specify executable path in Chrome()
-    # Executable_path:optional argument, if not specified will search path.
-    if platform.system() == "Windows":
-        driver = webdriver.Chrome(options=chrome_options, executable_path='drivers/chromedriver_win32/chromedriver.exe')  
-    elif platform.system() == 'Linux':
-        driver = webdriver.Chrome(executable_path='drivers/chromedriver.exe')
-    elif platform.system() == 'Darwin':
-        driver = webdriver.Chrome(executable_path='drivers/chromedriver')
-    else:
-        driver = webdriver.Chrome()
-
-    # Poll DOM for 2 seconds for locating elements
-    driver.implicitly_wait(2)
+    driver = webHelper.initialize_driver(headless)
 
     return {"data": "initiated", "result": "success"}
 
@@ -222,7 +195,7 @@ def test():
     print(get_url())
 
     start = time()
-    print(get_background_colors())
+    print(webHelper.check_system_status(driver))
     print(time() - start)
 
     print(quit_driver())
