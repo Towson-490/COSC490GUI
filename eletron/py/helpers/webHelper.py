@@ -21,34 +21,50 @@ import nltk
 #                                                   #
 #####################################################
 
+# Initialize driver globally: 'global driver' to be used in definitions
+driver = None
+
 # Initialize and return driver
 def initialize_driver(headless):
+  global driver
   # Create ChomeOptions object to configure driver
-    chrome_options = Options()
-    # Limit console loggin in headless mode
-    chrome_options.add_argument("--log-level=3")
-    chrome_options.add_argument("--window-size=500,500")
+  chrome_options = Options()
+  # Limit console loggin in headless mode
+  chrome_options.add_argument("--log-level=3")
+  chrome_options.add_argument("--window-size=500,500")
 
-    if headless == "true":
-        # Set headless mode if route arg is set to true
-        chrome_options.add_argument("--headless")
+  if headless == "true":
+      # Set headless mode if route arg is set to true
+      chrome_options.add_argument("--headless")
 
-    # Check Chrome version to download appropriate binaries
-    # Add binaries to directory (drivers) and specify executable path in Chrome()
-    # Executable_path:optional argument, if not specified will search path.
-    if platform.system() == "Windows":
-        driver = webdriver.Chrome(options=chrome_options, executable_path='drivers/chromedriver_win32/chromedriver.exe')  
-    elif platform.system() == 'Linux':
-        driver = webdriver.Chrome(executable_path='drivers/chromedriver.exe')
-    elif platform.system() == 'Darwin':
-        driver = webdriver.Chrome(executable_path='drivers/chromedriver')
-    else:
-        driver = webdriver.Chrome()
+  # Check Chrome version to download appropriate binaries
+  # Add binaries to directory (drivers) and specify executable path in Chrome()
+  # Executable_path:optional argument, if not specified will search path.
+  if platform.system() == "Windows":
+      driver = webdriver.Chrome(options=chrome_options, executable_path='drivers/chromedriver_win32/chromedriver.exe')  
+  elif platform.system() == 'Linux':
+      driver = webdriver.Chrome(executable_path='drivers/chromedriver.exe')
+  elif platform.system() == 'Darwin':
+      driver = webdriver.Chrome(executable_path='drivers/chromedriver')
+  else:
+      driver = webdriver.Chrome()
 
-    # Poll DOM for 2 seconds for locating elements
-    driver.implicitly_wait(2)
-    
-    return driver
+  # Poll DOM for 2 seconds for locating elements
+  driver.implicitly_wait(2)
+  
+  return driver
+  
+# Instruct driver to navigate to url
+def get_url():
+  global driver
+  # For testing purposes. Will be replaced by arg in route
+  driver.get("https://www.towson.edu")
+  sleep(5)
+
+# Close instance of driver  
+def quit_driver():
+  global driver
+  driver.quit()
 
 # Save webpage html to local directory
 def save_source(address, source):
@@ -64,7 +80,8 @@ def save_source(address, source):
       return 'page created'
       
 # Get elements on page, find unique fonts
-def get_element_fonts(driver):
+def get_element_fonts():
+  global driver
   elements = driver.find_elements_by_css_selector("*")
   fonts = []
 
@@ -77,7 +94,8 @@ def get_element_fonts(driver):
     
 ###########################################################################
 #                         ***FIX***
-def get_inner_html(driver):  # incomplete
+def get_inner_html():  # incomplete
+  # global driver
   # elements = driver.find_elements_by_css_selector("*")
   # text = ""
   # for i, e in enumerate(elements):
@@ -126,7 +144,8 @@ def text_from_html(body):
 ############################################################################
 
 # Get elemets, find unique colors
-def get_text_colors(driver):
+def get_text_colors():
+  global driver
   elements = driver.find_elements_by_css_selector("*")
 
   try:
@@ -137,7 +156,8 @@ def get_text_colors(driver):
   return list(set(text_colors))
 
 # Get elements, find unique background colors
-def get_background_colors(driver):
+def get_background_colors():
+  global driver
   elements = driver.find_elements_by_css_selector("*")
   
   try:
@@ -162,7 +182,8 @@ def nogo_search(file_name, lst):
   return None if len(found)==0 else found
 
 # Get links on page, run links and record frontend/backend response times compared to navigation start
-def check_response(driver): # https://www.lambdatest.com/blog/how-to-measure-page-load-times-with-selenium/
+def check_response(): # https://www.lambdatest.com/blog/how-to-measure-page-load-times-with-selenium/
+  global driver
   elements = driver.find_elements_by_css_selector('a')
   backend_performance = []
   frontend_performance = []
@@ -193,7 +214,8 @@ def check_response(driver): # https://www.lambdatest.com/blog/how-to-measure-pag
   return backend_performance, frontend_performance
 
 # Check system status response for delayed results
-def check_system_status(driver):
+def check_system_status():
+  global driver
   # Throttle network speed to simulate delayed system response
   driver.set_network_conditions(
     offline=False,

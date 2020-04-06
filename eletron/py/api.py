@@ -18,36 +18,26 @@ app = Flask(__name__)
 def hello_world():
     return ('Hello, World!')
 
-# Initialize driver globally: 'global driver' to be used in definitions
-driver = None
-
 # Initialize chrome driver
 @app.route('/init/headless=<headless>', methods=['GET'])
 def initiate_driver(headless):
-    global driver
-
     driver = webHelper.initialize_driver(headless)
 
     return {"data": "initiated", "result": "success"}
 
-# Instruct driver to browse to url
+# Instruct driver to navigate to url
 # Must be called before other definitions
 @app.route('/get', methods=['GET'])
 def get_url():
-    global driver
-
-    # For testing purposes. Will be replaced by arg in route
-    driver.get("https://www.towson.edu")
-    sleep(5)
+    webHelper.get_url()
 
     return {"data": "webpage contacted", "result": "success"}
 
 # Close instance of driver  
 @app.route('/quit', methods=['GET'])
 def quit_driver():
-    global driver
 
-    driver.quit()
+    webHelper.quit_driver()
   
     return {"data": "stopped", "result": "success"}
 
@@ -59,9 +49,8 @@ def save_source(address, source):
 # Get the unique fonts of elements
 @app.route('/get_fonts', methods=['GET'])
 def get_element_fonts():
-    global driver
 
-    fonts = webHelper.get_element_fonts(driver)
+    fonts = webHelper.get_element_fonts()
     result, desc = quantitativeAnalysis(6, fonts)
 
     return {"data": " ".join(fonts), "result": result, "desc": desc}
@@ -69,9 +58,8 @@ def get_element_fonts():
 # Get unique text colors on page
 @app.route('/get_text_colors', methods=['GET'])
 def get_text_colors():
-    global driver
 
-    colors = webHelper.get_text_colors(driver)
+    colors = webHelper.get_text_colors()
     result, desc = quantitativeAnalysis(10, colors)
 
     return {"data": " ".join(colors), "result": result, "desc": desc}
@@ -82,10 +70,9 @@ background_colors = None
 # Get unique background colors on page
 @app.route('/get_background_colors', methods=['GET'])
 def get_background_colors():
-    global driver
     global background_colors
 
-    background_colors = webHelper.get_background_colors(driver)
+    background_colors = webHelper.get_background_colors()
     result, desc = quantitativeAnalysis(10, background_colors)
 
     return {"data": " ".join(background_colors), "result": result, "desc": desc}
@@ -101,11 +88,10 @@ def quantitativeAnalysis(passNum, arr):
 @app.route('/get_nogo_colors/<choice>', methods=['GET'])
 def get_nogo_colors(choice):
     global background_colors
-    global driver
 
     if choice == "background":
         if background_colors is None:
-            background_colors = webHelper.get_background_colors(driver)
+            background_colors = webHelper.get_background_colors()
 
         colors = webHelper.nogo_search('noGoColors.txt', background_colors) 
 
@@ -125,10 +111,9 @@ inner_text = None
 #                   ***FIX***
 @app.route('/get_nogo_text/text', methods=['GET'])
 def get_nogo_text():
-    global driver
     global inner_text
 
-    inner_text = webHelper.get_inner_html(driver)
+    inner_text = webHelper.get_inner_html()
 
     if len(inner_text) > 0:
         return {"data": " ".join(inner_text), "result": "Fail", "desc": "No-go words were found"}
@@ -162,9 +147,8 @@ def get_nogo_text():
 # Headless mode to be set to true to emulate user interaction
 @app.route('/get_avg_response', methods=['GET'])
 def get_avg_response():
-    global driver
 
-    backend_performance, frontend_performance = webHelper.check_response(driver)
+    backend_performance, frontend_performance = webHelper.check_response()
 
     print(backend_performance, frontend_performance)
 
@@ -189,13 +173,12 @@ def get_avg_response():
 # Route to test webhelper definitions 
 @app.route('/test')
 def test():
-    global driver
 
     print(initiate_driver("true"))
     print(get_url())
 
     start = time()
-    print(webHelper.check_system_status(driver))
+    print(webHelper.check_system_status())
     print(time() - start)
 
     print(quit_driver())
