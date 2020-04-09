@@ -18,22 +18,27 @@ app = Flask(__name__)
 def hello_world():
     return ('Hello, World!')
 
-# Initialize chrome driver
+
+"""Initialize chrome driver"""
 @app.route('/init/headless=<headless>', methods=['GET'])
 def initiate_driver(headless):
     driver = webHelper.initialize_driver(headless)
 
     return {"data": "initiated", "result": "success"}
 
-# Instruct driver to navigate to url
-# Must be called before other definitions
+
+"""
+Instruct driver to navigate to url
+Must be called before other definitions
+"""
 @app.route('/get', methods=['GET'])
 def get_url():
     webHelper.get_url()
 
     return {"data": "webpage contacted", "result": "success"}
 
-# Close instance of driver  
+
+"""Close instance of driver"""  
 @app.route('/quit', methods=['GET'])
 def quit_driver():
 
@@ -41,12 +46,14 @@ def quit_driver():
   
     return {"data": "stopped", "result": "success"}
 
-# Save document of source to inspect locally
+
+"""Save document of source to inspect locally"""
 @app.route('/save_source', methods=['GET'])
 def save_source(address, source):
     return webHelper.save_source(address, source)
 
-# Get the unique fonts of elements
+
+"""Get the unique fonts of elements"""
 @app.route('/get_fonts', methods=['GET'])
 def get_element_fonts():
 
@@ -55,7 +62,8 @@ def get_element_fonts():
 
     return {"data": " ".join(fonts), "result": result, "desc": desc}
 
-# Get unique text colors on page
+
+"""Get unique text colors on page"""
 @app.route('/get_text_colors', methods=['GET'])
 def get_text_colors():
 
@@ -64,10 +72,11 @@ def get_text_colors():
 
     return {"data": " ".join(colors), "result": result, "desc": desc}
 
-# initialize to be used globally
+
+"""Initialize to be used globally"""
 background_colors = None
 
-# Get unique background colors on page
+"""Get unique background colors on page"""
 @app.route('/get_background_colors', methods=['GET'])
 def get_background_colors():
     global background_colors
@@ -77,14 +86,16 @@ def get_background_colors():
 
     return {"data": " ".join(background_colors), "result": result, "desc": desc}
 
-# Get quantitative analysis of similar definitions to determine pass/fail
+
+"""Get quantitative analysis of similar definitions to determine pass/fail"""
 def quantitativeAnalysis(passNum, arr):
     result = "Pass" if len(arr) <= passNum else "Fail"
     desc = "Number of Different font colors: " + str(len(arr)) + "\nAcceptable Number: " + str(passNum)
 
     return result, desc
 
-# Get whether colors used are included in NoGoColors.txt
+
+"""Get whether colors used are included in NoGoColors.txt"""
 @app.route('/get_nogo_colors/<choice>', methods=['GET'])
 def get_nogo_colors(choice):
     global background_colors
@@ -105,6 +116,7 @@ def get_nogo_colors(choice):
             return {"data": " ".join(colors), "result": "Fail", "desc": "No-go colors were found"}
         else:
             return {"data": "None", "result": "Pass", "desc": "No No-go colors were found"}
+
 
 inner_text = None
 ###############################################
@@ -143,8 +155,11 @@ def get_nogo_text():
 #                   ***FIX***
 #######################################################
 
-# Get average backend/frontend response time
-# Headless mode to be set to true to emulate user interaction
+
+"""
+Get average backend/frontend response time
+Headless mode to be set to true to emulate user interaction
+"""
 @app.route('/get_avg_response', methods=['GET'])
 def get_avg_response():
 
@@ -170,7 +185,7 @@ def get_avg_response():
     return {"data": [backend_avg, frontend_avg], "result": [backend_result, frontend_result], "desc": desc}
 
 
-# Route to test webhelper definitions 
+"""Route to test webhelper definitions""" 
 @app.route('/test')
 def test():
 
