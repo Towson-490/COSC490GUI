@@ -1,6 +1,7 @@
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 from selenium.common.exceptions import StaleElementReferenceException, TimeoutException
+from selenium.webdriver.common.action_chains import ActionChains
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
@@ -26,8 +27,14 @@ import nltk
 driver = None
 
 # Initialize and return driver
-def initialize_driver(headless, capabilities=None):
+def initialize_driver(headless, capabilities=None, incognito=None):
   global driver
+  
+  driver = create_driver(headless, capabilities=None, incognito=None)
+  
+  return driver
+
+def create_driver(headless, capabilities=None, incognito=None):
   kwargs = { }
   executable_path = None
   # Create ChomeOptions object to configure driver
@@ -35,6 +42,9 @@ def initialize_driver(headless, capabilities=None):
   # Limit console loggin in headless mode
   chrome_options.add_argument("--log-level=3")
   chrome_options.add_argument("--window-size=500,500")
+
+  if incognito:
+    chrome_options.add_argument("--incognito")
 
   if headless == "true":
       # Set headless mode if route arg is set to true
@@ -61,7 +71,7 @@ def initialize_driver(headless, capabilities=None):
 
   # Poll DOM for 2 seconds for locating elements
   driver.implicitly_wait(2)
-  
+
   return driver
   
 # Instruct driver to navigate to url
@@ -223,35 +233,76 @@ def check_response(): # https://www.lambdatest.com/blog/how-to-measure-page-load
     
   return backend_performance, frontend_performance
 
+# page_loads_within_timeout(start_url, timeout)
+class page_loads_within_timeout(object):
+  # 
+  def __init__(self, start_url, timeout):
+    self.start_url = start_url
+    self.timeout = timeout
+
+  def __call__(self, driver):
+    if driver.current_url != self.start_url:
+        return True
+    else:
+        return False
+
 # Check system status response for delayed results
-def check_system_status():
+def check_system_status(timeout):
   global driver
   start_url = driver.current_url
+  search_string = "This is a search string"
+  print(start_url)
+  sleep(2)
+  driver.maximize_window()
+  driver.set_page_load_timeout(timeout)
+  start_html = driver.page_source  
 
-  
+  test_driver = create_driver("false", incognito=True)
 
-  # Throttle network speed to simulate delayed system response
-  driver.set_network_conditions(
-    offline=False,
-    latency=10000,  # additional latency (ms)
-    download_throughput=100 * 1024,  # maximal throughput
-    upload_throughput=100 * 1024   # maximal throughput
-    )  
-
-  link = driver.find_elements_by_css_selector('a')
-  link = link[10].get_attribute("href")
-  print(link)
-
-  wait = WebDriverWait(driver, 10)
-  # driver.get(link)
   try:
-    driver.execute_script("window.alert('alert')")
-    wait.until(EC.alert_is_present())
+    print("\n*********Starting new driver*********\n")
+    test_driver.get(start_url)
+    sleep(2)
+    test_driver.maximize_window()
+    wait = WebDriverWait(test_driver, 10)
+    print("\n*********Getting input for new page*********\n")
+    element = wait.until(EC.presence_of_element_located((By.XPATH, "//input[@type='text']")))
+    print("\n*********Sending search string*********\n")
+    element.send_keys(search_string)
+    element.send_keys(u'\ue007')
+    sleep(2)
+    print("\n*********Getting expected new title*********\n")
+    new_title = test_driver.title
+    print(new_title)
+    test_driver.quit()
+
+    print("\n*********Setting network conditions*********\n")
+    # Throttle network speed to simulate delayed system response
+    driver.set_network_conditions(
+      offline=False,
+      latency=1000*timeout + 5000,  # additional latency (ms)
+      download_throughput=1,  # maximal throughput
+      upload_throughput=1   # maximal throughput
+      )
+
+    print("\n*********Sending input for test*********\n")
+    element = driver.find_element_by_xpath("//input[@type='text']")
+    element.send_keys(search_string)
+    element.send_keys(u'\ue007')
+
   except TimeoutException:
+    print("\n********Stopping Execution*******\n")
+    driver.execute_script("window.stop();")
+    element.send_keys(u'\ue005')
+    new_html = driver.page_source
+    print(new_html.replace(start_html, ''))
+    sleep(10)
     return "No system delay status response"
   finally:
-    driver.get(start_url)
-  return driver.get_network_conditions()
+    pass
+    # driver.get(start_url)
+  # sleep(10)
+  return "driver.get_network_conditions()"
 
 # Check for entry validity configuration
 def entry_validation_check(driver):

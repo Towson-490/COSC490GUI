@@ -176,9 +176,9 @@ def test():
 
     print(initiate_driver("false"))
     print(get_url())
-
+    
     start = time()
-    print(webHelper.check_system_status())
+    print(webHelper.check_system_status(5))
     print(time() - start)
 
     print(quit_driver())
