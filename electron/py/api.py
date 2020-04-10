@@ -1,5 +1,5 @@
 import sys
-from flask import Flask
+from flask import Flask, request
 from time import sleep, time
 
 from helpers import webHelper
@@ -20,8 +20,9 @@ def hello_world():
 
 
 """Initialize chrome driver"""
-@app.route('/init/headless=<headless>', methods=['GET'])
-def initiate_driver(headless):
+@app.route('/init', methods=['GET'])
+def initiate_driver():
+    headless = request.args.get("headless", False) # set to False defaul
     driver = webHelper.initialize_driver(headless)
 
     return {"data": "initiated", "result": "success"}
