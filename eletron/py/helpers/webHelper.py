@@ -27,6 +27,12 @@ import nltk
 """Initialize driver globally: 'global driver' to be used in definitions"""
 driver = None
 
+"""Initialize test site globally. If not supplied defaults to www.towson.edu"""
+test_site = "phptravels.net"
+url = "https://www." + test_site
+# Email user@phptravels.com
+# Password demouser
+
 """Initialize and return driver"""
 def initialize_driver(headless, capabilities=None, incognito=None):
   global driver
@@ -57,25 +63,25 @@ def create_driver(headless, capabilities=None, incognito=None):
       chrome_options.add_argument("--headless")
   
   """Add options to arg object"""
-  kwargs['options'] = chrome_options
+  kwargs["options"] = chrome_options
 
   """Check Chrome version to download appropriate binaries"""
   # Add binaries to directory (drivers) and specify executable path in Chrome()
   # Executable_path:optional argument, if not specified will search path.
   if platform.system() == "Windows":
-      executable_path='drivers/chromedriver_win32/chromedriver.exe'
-  elif platform.system() == 'Linux':
-      executable_path='drivers/chromedriver.exe'
-  elif platform.system() == 'Darwin':
-      executable_path='drivers/chromedriver'
+      executable_path="drivers/chromedriver_win32/chromedriver.exe"
+  elif platform.system() == "Linux":
+      executable_path="drivers/chromedriver.exe"
+  elif platform.system() == "":
+      executable_path="drivers/chromedriver"
 
   """Add executable path if custom chromedriver exists"""
   if executable_path and os.path.exists(executable_path):
-    kwargs['executable_path'] = executable_path
+    kwargs["executable_path"] = executable_path
 
   """Add desired capabilities if supplied"""
   if capabilities:
-    kwargs['desired_capabilities'] = capabilities
+    kwargs["desired_capabilities"] = capabilities
 
   """Initialize driver with varied arg options"""
   driver = webdriver.Chrome(**kwargs)
@@ -92,9 +98,9 @@ def create_driver(headless, capabilities=None, incognito=None):
 """Instruct driver to navigate to url"""
 def get_url():
   global driver
-
+  global url
   # For testing purposes. Will be replaced by arg in route
-  driver.get("https://www.towson.edu")
+  driver.get( url if url else "https://www.towson.edu")
   sleep(5)
 
   return "url contacted"
@@ -113,16 +119,16 @@ def quit_driver():
 Save webpage html to local directory
 """
 def save_source(address, source):
-  name = address.replace('.', '-') + '.html'
-  path = './data/' + name
+  name = address.replace(".", "-") + ".html"
+  path = "./data/" + name
 
   if os.path.exists(path):
-      return 'page exists'
+      return "page exists"
   else:
       f = open(path, 'w')
       f.write(source)
       f.close()
-      return 'page created'
+      return "page created"
 
       
 """Get elements on page, find unique fonts"""
@@ -132,7 +138,7 @@ def get_element_fonts():
   fonts = []
 
   try:
-    [ fonts.extend(map(str.strip, e.value_of_css_property('font-family').split(","))) for e in elements ]
+    [ fonts.extend(map(str.strip, e.value_of_css_property("font-family").split(","))) for e in elements ]
   except StaleElementReferenceException as e:
       print(e)
 
@@ -154,15 +160,16 @@ def get_inner_html():  # incomplete
   #         print(e)
 
   # return text
+  global url
   words = []
-  html = urllib.request.urlopen('https://www.towson.edu/').read()
+  html = urllib.request.urlopen(url if url else "https://www.towson.edu/").read()
   # puts the text into a file
   tokenizer = nltk.sent_tokenize(str(text_from_html(html)))
   html_file = open("html_file.txt", "w+")
   html_file.write(str(tokenizer))
-  bad_words_list = ['news','YOU','WHERE','stupid'] # enter trigger words here
+  bad_words_list = ["news", "YOU", "WHERE", "stupid"] # enter trigger words here
   count = 0
-  with open('html_file.txt','r') as file: # iterates over the list and checks it against the file
+  with open("html_file.txt","r") as file: # iterates over the list and checks it against the file
       reader = file.read()
       for lst in bad_words_list:
           if lst.casefold() in reader.casefold():
@@ -170,20 +177,20 @@ def get_inner_html():  # incomplete
               print("Trigger word found: '" + lst + "' shows up on the website")
               count += 1
           else:
-              print('false')
+              print("false")
 
   return list(set(words))
 
 # finds the elements
 def tag_visible(element):
-    if element.parent.name in ['style', 'script', 'head', 'title', 'meta', '[document]']:
+    if element.parent.name in ["style", "script", "head", "title", "meta", "[document]"]:
         return False
     if isinstance(element, Comment):
         return False
     return True
 # turns the html into text
 def text_from_html(body):
-    soup = BeautifulSoup(body, 'html.parser')
+    soup = BeautifulSoup(body, "html.parser")
     texts = soup.findAll(text = True)
     visible_texts = filter(tag_visible, texts)
     return u" ".join(t.strip() for t in visible_texts)
@@ -191,13 +198,13 @@ def text_from_html(body):
 ############################################################################
 
 
-# Get elemets, find unique colors
+"""Get elemets, find unique colors"""
 def get_text_colors():
   global driver
   elements = driver.find_elements_by_css_selector("*")
 
   try:
-    text_colors = [ e.value_of_css_property('color') for e in elements ]
+    text_colors = [ e.value_of_css_property("color") for e in elements ]
   except StaleElementReferenceException as e:
       print(e)
 
@@ -210,7 +217,7 @@ def get_background_colors():
   elements = driver.find_elements_by_css_selector("*")
   
   try:
-    background_colors = [ e.value_of_css_property('background-color') for e in elements ]
+    background_colors = [ e.value_of_css_property("background-color") for e in elements ]
     # 'background' property may contain a set color as well as other properties
   except StaleElementReferenceException as e:
       print(e)
@@ -232,16 +239,22 @@ def nogo_search(file_name, lst):
   return None if len(found)==0 else found
 
 
-"""Get links on page, run links and record frontend/backend response times compared to navigation start"""
+"""
+Get links on page, run links and record frontend/backend response times compared to navigation start
+
+https://www.nngroup.com/articles/response-times-3-important-limits/
+**Time from link: between .1-10 seconds
+"""
 def check_response():
   global driver
-  elements = driver.find_elements_by_css_selector('a')
+  global test_site
+  elements = driver.find_elements_by_css_selector("a")
   backend_performance = []
   frontend_performance = []
 
   try:
     # www.towson.edu for test purposes, will be supplied by domain specified in test
-    hrefs = [ e.get_attribute("href") for e in elements if "towson.edu" in e.get_attribute("href") ]
+    hrefs = [ e.get_attribute("href") for e in elements if (test_site if test_site else "towson.edu") in e.get_attribute("href") ]
   except StaleElementReferenceException as e:
       print(e)
 
@@ -270,7 +283,14 @@ def check_response():
   return backend_performance, frontend_performance
 
 
-"""Check system status response for delayed results"""
+"""
+Check system status response for delayed results
+
+https://www.nngroup.com/articles/response-times-3-important-limits/
+**Time from link: between .1-10 seconds
+
+*Works for Towson...
+"""
 def check_system_status(timeout):
   global driver
   start_url = driver.current_url
@@ -290,12 +310,12 @@ def check_system_status(timeout):
   try:
     """Start a new Driver to retrieve expected page title to avoid cached webpage"""
     test_driver.get(start_url)
-    sleep(2)
     test_driver.maximize_window()
+    sleep(2)
     wait = WebDriverWait(test_driver, 10)
     element = wait.until(EC.presence_of_element_located((By.XPATH, "//input[@type='text']")))
     element.send_keys(search_string)
-    element.send_keys(u'\ue007')
+    element.send_keys(u"\ue007")
     sleep(2)
     new_title = test_driver.title
     test_driver.quit()
@@ -310,7 +330,7 @@ def check_system_status(timeout):
 
     element = driver.find_element_by_xpath("//input[@type='text']")
     element.send_keys(search_string)
-    element.send_keys(u'\ue007')
+    element.send_keys(u"\ue007")
 
   except TimeoutException:
     """
@@ -342,6 +362,50 @@ def check_system_status(timeout):
   # sleep(10)
   return "driver.get_network_conditions()"
 
-# Check for entry validity configuration
-def entry_validation_check(driver):
-  pass
+"""Check for entry validity configuration"""
+def entry_validation_check():
+  global driver
+  driver.maximize_window()
+  sleep(5)
+
+  # Validation attributes by type
+  attrs = {
+    "submit": ["formnovalidate", "formenctype"],
+    "files": ["accept", "required"],
+    "number": ["min", "max" , "required"],
+    "date": ["min", "max", "pattern", "required"],
+    "image": ["formenctype"]
+    }
+  attrs.update(dict.fromkeys(["password", "email", "tel", "url", "search", "text"], ["minlength", "pattern", "placeholder", "required"]))
+  attrs.update(dict.fromkeys(["week", "month", "time", "ranges"], ["min", "max"]))
+  attrs.update(dict.fromkeys(["radio", "checkbox"], ["required"]))
+
+  """Get input elements to check configuration, 10 second limit to find at least 1 element"""
+  wait = WebDriverWait(driver, 10)
+  elements = wait.until(EC.presence_of_all_elements_located((By.TAG_NAME, "input")))
+
+  """For each input found, append to inputs with validation configuration"""
+  inputs = {}
+  for e in elements:
+    id = str(e.id)
+    input_type = e.get_attribute("type")
+    # input_el.find_element_by_xpath('..')
+    
+    if input_type and input_type != "hidden":
+      inputs[id] = {"type": e.get_attribute("type")}
+      [inputs[id].update({a: (e.get_attribute(a) if e.get_attribute(a) else "Not Specified")}) for a in attrs[input_type]]
+    elif input_type == "hidden":
+      driver.execute_script("arguments[0].removeAttribute('hidden')", e)
+      inputs[id] = {'type': "Hidden"}
+    else:
+      inputs[id] = {'type': "Not specified"}
+
+    if id in inputs:
+      driver.execute_script("arguments[0].setAttribute('style', 'background: yellow; border: 5px solid red;');", e)
+
+  for i in inputs:
+    print(i, ":", inputs[i])
+
+  sleep(10)
+
+  return ""

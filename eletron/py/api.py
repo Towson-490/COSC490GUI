@@ -159,6 +159,9 @@ def get_nogo_text():
 """
 Get average backend/frontend response time
 Headless mode to be set to true to emulate user interaction
+
+https://www.nngroup.com/articles/response-times-3-important-limits/
+**Time from link: between .1-10 seconds
 """
 @app.route('/get_avg_response', methods=['GET'])
 def get_avg_response():
@@ -170,9 +173,8 @@ def get_avg_response():
     backend_avg = sum(backend_performance) / len(backend_performance)
     frontend_avg = sum(frontend_performance) / len(frontend_performance)
 
-    # ** Find standard to apply **
-    backend_accept = 2000 
-    frontend_accept = 2000
+    backend_accept = 5000 
+    frontend_accept = 5000
 
     backend_result ="backend: " + "Pass" if backend_avg < backend_accept else "Fail"
     frontend_result ="frontend: " + "Pass" if frontend_avg < frontend_accept else "Fail"
@@ -193,7 +195,8 @@ def test():
     print(get_url())
     
     start = time()
-    print(webHelper.check_system_status(5))
+    # print(webHelper.check_system_status(5))
+    print(webHelper.entry_validation_check())
     print(time() - start)
 
     print(quit_driver())
