@@ -291,6 +291,7 @@ https://www.nngroup.com/articles/response-times-3-important-limits/
 
 *Works for Towson...
 """
+# Needs route
 def check_system_status(timeout):
   global driver
   start_url = driver.current_url
@@ -363,6 +364,7 @@ def check_system_status(timeout):
   return "driver.get_network_conditions()"
 
 """Check for entry validity configuration"""
+# Needs Route
 def entry_validation_check():
   global driver
   driver.maximize_window()
