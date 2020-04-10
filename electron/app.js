@@ -89,7 +89,7 @@ function createAddWindow() {
             nodeIntegration: true
         },
         parent: mainWindow,
-        modal: true,
+        modal: false,
         frame: true,
         width: 300,
         height: 400,
@@ -136,7 +136,7 @@ const mainMenuTemplate = [
 // If mac, add empty object to menu
 if (process.platform == 'darwin') {
     // array method adds to beginning to array
-    mainMenuTemplate.unshift({});
+    mainMenuTemplate.unshift({label: ''});
 }
 
 // Add developer tools if not in production

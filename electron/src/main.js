@@ -53,8 +53,8 @@ async function callTests(){
         var result = "";
         if(!initiated){
             console.log("Initializing Driver");
-            result = await http('/init');
-            if (result.result == "success"){
+            result = await http('/init?headless=True');
+            if (result.result === "success"){
                 initiated = true
             }
             console.log(result);
