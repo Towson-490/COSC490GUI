@@ -1,15 +1,15 @@
-var { ipcRenderer } = require('electron');
+let { ipcRenderer } = require('electron');
 
-var url = "http://127.0.0.1:5000";
-var count = 0;
-var clicked = null
-initiated = false
+let url = "http://127.0.0.1:5000";
+let count = 0;
+let clicked = null;
+let initiated = false;
 
  function http(end) {
     return new Promise(resolve => {
-        var xhttp = new XMLHttpRequest();
+        const xhttp = new XMLHttpRequest();
         xhttp.onreadystatechange = function () {
-            if (this.readyState == 4 && this.status == 200) {
+            if (this.readyState === 4 && this.status === 200) {
                 resolve(JSON.parse(this.responseText))
             }
         };
@@ -35,7 +35,7 @@ ipcRenderer.on('add-test', function (e, data) {
         testDiv.appendChild(testText);
     });
     testDiv.addEventListener('click', function(){
-        if(testDiv.className == "testChoice"){
+        if(testDiv.className === "testChoice"){
             if(clicked){
                 clicked.className = "testChoice";
             }
@@ -50,7 +50,7 @@ ipcRenderer.on('add-test', function (e, data) {
 
 async function callTests(){
     if(clicked){
-        var result = "";
+        let result = "";
         if(!initiated){
             console.log("Initializing Driver");
             result = await http('/init?headless=True');
@@ -58,16 +58,16 @@ async function callTests(){
                 initiated = true
             }
             console.log(result);
-            console.log("Getting Webpage");
+            console.log("Getting WebPage");
             result = await http('/get');
             console.log(result);
         }
-        
-        var tests = []
-        for(var i = 0; i < clicked.childNodes.length; i ++ ){
-            var node = clicked.childNodes[i];
-            if(node.nodeName == "#text"){
-                test = node.data.trim()
+
+        const tests = [];
+        for(let i = 0; i < clicked.childNodes.length; i ++ ){
+            const node = clicked.childNodes[i];
+            if(node.nodeName === "#text"){
+                test = node.data.trim();
                 tests.push(test);
                 console.log("Running Test for " + test);
                 result = await http('/' + test)
@@ -77,7 +77,7 @@ async function callTests(){
 
         console.log("Ending Test");
         result = await http('/quit');
-        console.log(result)
+        console.log(result);
         alert("Testing Finished & Processes Stopped")
     }else{
         alert("Must pick test to run");
@@ -86,7 +86,7 @@ async function callTests(){
 
 function clearTests(){
     const allTests = document.getElementById('tests');
-    allTests.innerHTML = ""
+    allTests.innerHTML = "";
     count = 0
 }
 
