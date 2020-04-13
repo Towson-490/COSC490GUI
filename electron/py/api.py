@@ -22,8 +22,9 @@ def hello_world():
 """Initialize chrome driver"""
 @app.route('/init', methods=['GET'])
 def initiate_driver():
-    headless = request.args.get("headless", False) # set to False default
-    driver = webHelper.initialize_driver(headless)
+    headless = request.args.get("headless", default=False) # set to False default
+    print(headless)
+    driver = webHelper.initialize_driver(headless=(True if headless=="True" else False))
 
     return {"data": "initiated", "result": "success"}
 

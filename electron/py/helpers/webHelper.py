@@ -59,7 +59,7 @@ def create_driver(headless, capabilities=None, incognito=None):
     chrome_options.add_argument("--incognito")
 
   """Set headless mode if route arg is set to true"""
-  if headless == "true":
+  if headless:
       chrome_options.add_argument("--headless")
   
   """Add options to arg object"""
