@@ -22,7 +22,7 @@ def hello_world():
 """Initialize chrome driver"""
 @app.route('/init', methods=['GET'])
 def initiate_driver():
-    headless = request.args.get("headless", False) # set to False defaul
+    headless = request.args.get("headless", False) # set to False default
     driver = webHelper.initialize_driver(headless)
 
     return {"data": "initiated", "result": "success"}
@@ -191,8 +191,8 @@ def get_avg_response():
 """Route to test webhelper definitions""" 
 @app.route('/test')
 def test():
-
-    print(initiate_driver("false"))
+    headless = request.args.get("headless", False) # set to False default
+    print(webHelper.initialize_driver(headless))
     print(get_url())
     
     start = time()

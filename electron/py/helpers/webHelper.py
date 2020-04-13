@@ -37,7 +37,7 @@ url = "https://www." + test_site
 def initialize_driver(headless, capabilities=None, incognito=None):
   global driver
   
-  driver = create_driver(headless, capabilities=None, incognito=None)
+  driver = create_driver(headless, capabilities, incognito)
   
   return driver
 
@@ -64,16 +64,6 @@ def create_driver(headless, capabilities=None, incognito=None):
   
   """Add options to arg object"""
   kwargs["options"] = chrome_options
-
-  """Check Chrome version to download appropriate binaries"""
-  # Add binaries to directory (drivers) and specify executable path in Chrome()
-  # Executable_path:optional argument, if not specified will search path.
-  if platform.system() == "Windows":
-      executable_path="drivers/chromedriver_win32/chromedriver.exe"
-  elif platform.system() == "Linux":
-      executable_path="drivers/chromedriver.exe"
-  elif platform.system() == "Darwin":
-      executable_path="drivers/chromedriver"
 
   """Add executable path if custom chromedriver exists"""
   if executable_path and os.path.exists(executable_path):
