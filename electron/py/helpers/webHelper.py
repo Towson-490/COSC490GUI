@@ -72,7 +72,7 @@ def create_driver(headless, capabilities=None, incognito=None):
       executable_path="drivers/chromedriver_win32/chromedriver.exe"
   elif platform.system() == "Linux":
       executable_path="drivers/chromedriver.exe"
-  elif platform.system() == "":
+  elif platform.system() == "Darwin":
       executable_path="drivers/chromedriver"
 
   """Add executable path if custom chromedriver exists"""
