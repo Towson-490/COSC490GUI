@@ -315,7 +315,7 @@ def check_system_status(timeout):
     driver.execute_script("window.stop();")
     element.clear()
     new_html = driver.page_source
-    # # New html is currently different when it should be the same 
+    # # New html currently different when it should be the same 
     # print(new_html == start_html)
     # print(len(new_html), len(start_html))
     # return "Page content has changed in reponse to delayed response"
