@@ -58,9 +58,10 @@ def save_source(address, source):
 """Get the unique fonts of elements"""
 @app.route('/get_fonts', methods=['GET'])
 def get_element_fonts():
+    acceptable = request.args.get("acceptable", default=6)
 
     fonts = webHelper.get_element_fonts()
-    result, desc = quantitativeAnalysis(6, fonts)
+    result, desc = quantitativeAnalysis(int(acceptable), fonts)
 
     return {"data": " ".join(fonts), "result": result, "desc": desc}
 
