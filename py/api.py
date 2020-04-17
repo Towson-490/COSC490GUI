@@ -167,6 +167,9 @@ https://www.nngroup.com/articles/response-times-3-important-limits/
 """
 @app.route('/get_avg_response', methods=['GET'])
 def get_avg_response():
+    acceptable = request.args.get("acceptable", default=10000)
+    acceptable_back = request.args.get("back", default= 5000)
+    acceptable_front = request.args.get("front", default= 5000)
 
     backend_performance, frontend_performance = webHelper.check_response()
 
