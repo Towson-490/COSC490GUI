@@ -29,7 +29,7 @@ driver = None
 
 """Initialize test site globally. If not supplied defaults to www.towson.edu"""
 test_site = "phptravels.net"
-url = "https://www." + test_site
+test_url = "https://www." + test_site
 # Email user@phptravels.com
 # Password demouser
 
@@ -86,11 +86,11 @@ def create_driver(headless, capabilities=None, incognito=None):
 
   
 """Instruct driver to navigate to url"""
-def get_url():
+def get_url(url):
   global driver
-  global url
+
   # For testing purposes. Will be replaced by arg in route
-  driver.get( url if url else "https://www.towson.edu")
+  driver.get(url)
   sleep(5)
 
   return "url contacted"
