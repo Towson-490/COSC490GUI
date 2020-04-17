@@ -134,25 +134,11 @@ def get_element_fonts():
 
   return list(set(fonts))
 
-    
-###########################################################################
-#                         ***FIX***
-def get_inner_html():  # incomplete
-  # global driver
-  # elements = driver.find_elements_by_css_selector("*")
-  # text = ""
-  # for i, e in enumerate(elements):
-  #     try:
-  #         if e.value_of_css_property('display') != "none":
-  #             inner = driver.execute_script("return arguments[0].textContent", e)
-  #             text = text + " " + inner
-  #     except StaleElementReferenceException as e:
-  #         print(e)
 
-  # return text
+def get_inner_html():
   global url
   words = []
-  html = urllib.request.urlopen(url if url else "https://www.towson.edu/").read()
+  html = urllib.request.urlopen("https://www.towson.edu/").read()
   # puts the text into a file
   tokenizer = nltk.sent_tokenize(str(text_from_html(html)))
   html_file = open("html_file.txt", "w+")
@@ -184,8 +170,6 @@ def text_from_html(body):
     texts = soup.findAll(text = True)
     visible_texts = filter(tag_visible, texts)
     return u" ".join(t.strip() for t in visible_texts)
-#                              ***FIX***
-############################################################################
 
 
 """Get elemets, find unique colors"""
