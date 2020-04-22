@@ -1,5 +1,12 @@
 var { ipcRenderer } = require('electron');
 
+var addData = {} 
+ipcRenderer.on('add-data', function(e, data){
+  addData = data;
+  console.log(data)
+  
+});
+
 // Handle submit button
 function getCheckedBoxes(e){
   e.preventDefault();
@@ -33,5 +40,5 @@ function allChecked(){
     allTests.forEach(test => {
       test.checked = false;
     });
-    }  
+  }  
 }

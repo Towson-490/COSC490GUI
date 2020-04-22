@@ -11,7 +11,11 @@
 <body>
   <div id="websiteUrl">
     <label for="websiteUrl">Website Url:</label>
-    <input type="text" id="url" name="url">
+    <input type="text" id="url" 
+      placeholder="https://www.phptravels.net" 
+      value="https://www.phptravels.net" 
+      type="url"
+      pattern="https:\/\/www\.\w+.">
   </div>
   <br>
   <button id="createTest" onclick="callAddWindow()">Create Test</button>
