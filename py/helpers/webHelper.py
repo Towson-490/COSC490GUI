@@ -134,32 +134,18 @@ def get_element_fonts():
 
   return list(set(fonts))
 
-    
-###########################################################################
-#                         ***FIX***
-def get_inner_html():  # incomplete
-  # global driver
-  # elements = driver.find_elements_by_css_selector("*")
-  # text = ""
-  # for i, e in enumerate(elements):
-  #     try:
-  #         if e.value_of_css_property('display') != "none":
-  #             inner = driver.execute_script("return arguments[0].textContent", e)
-  #             text = text + " " + inner
-  #     except StaleElementReferenceException as e:
-  #         print(e)
 
-  # return text
+def get_inner_html():
   global url
   words = []
-  html = urllib.request.urlopen(url if url else "https://www.towson.edu/").read()
+  html = urllib.request.urlopen("https://www.towson.edu/").read()
   # puts the text into a file
   tokenizer = nltk.sent_tokenize(str(text_from_html(html)))
-  html_file = open("html_file.txt", "w+")
+  html_file = open("data/html_file.txt", "w+")
   html_file.write(str(tokenizer))
   bad_words_list = ["news", "YOU", "WHERE", "stupid"] # enter trigger words here
   count = 0
-  with open("html_file.txt","r") as file: # iterates over the list and checks it against the file
+  with open("data/html_file.txt","r") as file: # iterates over the list and checks it against the file
       reader = file.read()
       for lst in bad_words_list:
           if lst.casefold() in reader.casefold():
@@ -184,8 +170,6 @@ def text_from_html(body):
     texts = soup.findAll(text = True)
     visible_texts = filter(tag_visible, texts)
     return u" ".join(t.strip() for t in visible_texts)
-#                              ***FIX***
-############################################################################
 
 
 """Get elemets, find unique colors"""
@@ -331,7 +315,7 @@ def check_system_status(timeout):
     driver.execute_script("window.stop();")
     element.clear()
     new_html = driver.page_source
-    # # New html is currently different when it should be the same 
+    # # New html currently different when it should be the same 
     # print(new_html == start_html)
     # print(len(new_html), len(start_html))
     # return "Page content has changed in reponse to delayed response"
