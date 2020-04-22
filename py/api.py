@@ -35,7 +35,8 @@ Must be called before other definitions
 """
 @app.route('/get', methods=['GET'])
 def get_url():
-    webHelper.get_url()
+    url = request.args.get("url", default="https://www.phptravels.net")
+    webHelper.get_url(url)
 
     return {"data": "webpage contacted", "result": "success"}
 
@@ -97,7 +98,7 @@ def quantitativeAnalysis(passNum, arr):
     return result, desc
 
 
-"""Get whether colors used are included in NoGoColors.txt"""
+"""Get whether colors used are included in data/NoGoColors.txt"""
 @app.route('/get_nogo_colors/<choice>', methods=['GET'])
 def get_nogo_colors(choice):
     global background_colors
@@ -106,13 +107,13 @@ def get_nogo_colors(choice):
         if background_colors is None:
             background_colors = webHelper.get_background_colors()
 
-        colors = webHelper.nogo_search('noGoColors.txt', background_colors) 
+        colors = webHelper.nogo_search('data/noGoColors.txt', background_colors) 
 
     if choice == "text":
         pass
 
     if colors == "error":
-        return {"data": colors, "result": "Fail", "desc": "noGoColors.txt file not found"}
+        return {"data": colors, "result": "Fail", "desc": "data/noGoColors.txt file not found"}
     else:
         if colors:
             return {"data": " ".join(colors), "result": "Fail", "desc": "No-go colors were found"}
@@ -121,8 +122,7 @@ def get_nogo_colors(choice):
 
 
 inner_text = None
-###############################################
-#                   ***FIX***
+
 @app.route('/get_nogo_text/text', methods=['GET'])
 def get_nogo_text():
     global inner_text
@@ -133,29 +133,6 @@ def get_nogo_text():
         return {"data": " ".join(inner_text), "result": "Fail", "desc": "No-go words were found"}
     else:
         return {"data": "None", "result": "Pass", "desc": "No No-go colors were found"}
-
-# @app.route('/get_nogo_text/<choice>')
-# def get_nogo_text(choice):
-#     global inner_text
-#     global driver
-    
-#     if choice == "text":
-#     #     if inner_text is None:
-#     #         inner_text = webHelper.get_inner_html(driver)
-
-#     #     text = webHelper.nogo_colors('noGoText.txt', inner_text) 
-#         text = "INCOMPLETE: Disregard"
-
-#     if text == "error":
-#         return {"data": text, "result": "Fail", "desc": "noGoText.txt file not found"}
-#     else:
-#         if text:
-#             return {"data": " ".join(text), "result": "Fail", "desc": "No-go text was found"}
-#         else:
-#             return {"data": "None", "result": "Pass", "desc": "No No-go text was found"}
-
-#                   ***FIX***
-#######################################################
 
 
 """

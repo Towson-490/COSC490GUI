@@ -19,7 +19,14 @@ let initiated = false;
 }
 
 function callAddWindow(){
-    ipcRenderer.send('add-window');
+    // Create data object to send with ipcRenderer to app.js
+    var data ={};
+    // Get url from websiteURL
+    var url = document.getElementById("url").value;
+    data.url = url;
+    console.log(data);
+
+    ipcRenderer.send('add-window', data);
 }
 
 ipcRenderer.on('add-test', function (e, data) {
@@ -53,13 +60,15 @@ async function callTests(){
         let result = "";
         if(!initiated){
             console.log("Initializing Driver");
-            result = await http('/init?headless=True');
+            result = await http('/init?headless=False');
             if (result.result === "success"){
                 initiated = true
             }
             console.log(result);
-            console.log("Getting WebPage");
-            result = await http('/get');
+            var get = "/get"
+            get += "?url=" + document.getElementById("url").value
+            console.log("Getting WebPage: " + get);
+            result = await http(get);
             console.log(result);
         }
 

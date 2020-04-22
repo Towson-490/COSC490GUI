@@ -78,11 +78,12 @@ ipcMain.on('add-test', function (e, data) {
     addTestWindow.close();
 });
 
-ipcMain.on('add-window', (e) => {
-    createAddWindow();
+ipcMain.on('add-window', (e, data) => {
+    createAddWindow(data);
 });
+
 // Handle create add window
-function createAddWindow() {
+function createAddWindow(data) {
     // Create new window
     addTestWindow = new BrowserWindow({
         webPreferences: {
@@ -91,7 +92,7 @@ function createAddWindow() {
         parent: mainWindow,
         modal: false,
         frame: true,
-        width: 300,
+        width: 800,
         height: 400,
         title: 'Add Test'
     });
@@ -103,11 +104,16 @@ function createAddWindow() {
         slashes: true,
     }));
 
+    addTestWindow.webContents.on('did-finish-load', () => {
+        addTestWindow.webContents.send('add-data', data);
+    });
+
     // Quit window when closed
     addTestWindow.on('closed', () => {
         addTestWindow = null;
     });
 }
+
 
 const mainMenuTemplate = [
     {
