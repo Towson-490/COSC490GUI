@@ -141,11 +141,11 @@ def get_inner_html():
   html = urllib.request.urlopen("https://www.towson.edu/").read()
   # puts the text into a file
   tokenizer = nltk.sent_tokenize(str(text_from_html(html)))
-  html_file = open("html_file.txt", "w+")
+  html_file = open("data/html_file.txt", "w+")
   html_file.write(str(tokenizer))
   bad_words_list = ["news", "YOU", "WHERE", "stupid"] # enter trigger words here
   count = 0
-  with open("html_file.txt","r") as file: # iterates over the list and checks it against the file
+  with open("data/html_file.txt","r") as file: # iterates over the list and checks it against the file
       reader = file.read()
       for lst in bad_words_list:
           if lst.casefold() in reader.casefold():
