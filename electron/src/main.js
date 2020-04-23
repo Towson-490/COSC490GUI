@@ -10,6 +10,16 @@ let initiated = false;
 // To store routes when received by addTestWindow
 let testRoutes = {};
 
+// Create generalized alert element
+let actionAlert = (type, message)=> {
+    var div = document.createElement('div');
+    div.className = "alert alert-" + type;
+    div.role = "alert";
+    var text = document.createTextNode(message);
+    div.appendChild(text);
+    return div;
+}
+
 // Function for XMLHttpRequests
  function http(end) {
     return new Promise(resolve => {
@@ -26,6 +36,10 @@ let testRoutes = {};
 
 // Create addTestWindow on create test click
 function callAddWindow(){
+    // Get div #website to alert user
+    var div = document.getElementById("website");
+    div.appendChild(actionAlert("info", "Creating Test..."));
+
     // Create data object to send with ipcRenderer to app.js
     var data ={};
     // Get url from websiteURL
@@ -43,40 +57,48 @@ ipcRenderer.on('add-test', function (e, data) {
     const allTests = document.getElementById('tests');
 
     // Create div for test 
-    n = count++
-    const testDiv = document.createElement('div');
-    label = data.label + n;
-    testDiv.id = (label).replace(/\s+/g, '');
-    testDiv.className = "testChoice";
-    const h = document.createElement('h3');
-    h.innerText = label;
-    testDiv.appendChild(h);
-    // Add list to testRoutes object for test
-    testRoutes[label]=[]
+    var n = ++count
+    var label = data.label;
+    const testRow = document.createElement('tr');
+    testRow.id = (label).replace(/\s+/g, '');
+    testRow.className = "testChoice";
 
-    // Get tests and add to test div
-    // Add routes to testRoutes list for test
+    const rowHead = document.createElement('th');
+    rowHead.scope = "row";
+    rowHead.appendChild(document.createTextNode(n));
+    testRow.appendChild(rowHead);
+
+    var rowData = document.createElement('td');
+    rowData.appendChild(document.createTextNode(label))
+    testRow.appendChild(rowData);
+
+    rowData = document.createElement('td');
+
+    // Add list to testRoutes object for test
+    testRoutes[label]=[];
+
+    // Get tests and add to test row
+    // Add routes to testRoutes to cell for test
     for (const box in data.boxes){
-        console.log(box +": "+data.boxes[box])
-        const test = document.createElement('li');
-        test.appendChild(document.createTextNode(box))
-        testDiv.appendChild(test);
-        testRoutes[label].push(data.boxes[box])
+        rowData.appendChild(document.createTextNode(box));
+        rowData.appendChild(document.createElement("br"));
+        testRoutes[label].push(data.boxes[box]);
     }
+    testRow.appendChild(rowData);
 
     // Select and assign/reassign clicked test
-    testDiv.addEventListener('click', function(){
-        if(testDiv.className === "testChoice"){
+    testRow.addEventListener('click', function(){
+        if(testRow.className === "testChoice"){
             if(clicked){
                 clicked.className = "testChoice";
             }
-            testDiv.className = "clicked";
-            clicked = testDiv;
+            testRow.className = "table-primary clicked";
+            clicked = testRow;
         }else{
-            testDiv.className = "testChoice";
+            testRow.className = "testChoice";
         }
     });
-    allTests.appendChild(testDiv);
+    allTests.appendChild(testRow);
 });
 
 // Make queries on start click
@@ -86,7 +108,11 @@ async function callTests(){
         if(!initiated){            
             // Initialize driver
             console.log("Initializing Driver");
-            result = await http('/init?headless=False');
+            var init = "/init"
+            if(document.getElementById("headless").checked){
+                init += "?headless=True"
+            }
+            result = await http(init);
 
             // Set initiated to true to not double run tests
             if (result.result === "success"){

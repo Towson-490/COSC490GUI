@@ -19,10 +19,10 @@ function getCheckedBoxes(e){
   // Add checked boxes to array to send to main process
   checkboxes.forEach(box => {
     if (box.checked){  
-      checkedBoxes[box.nextSibling.wholeText.trim()] = box.value
+      checkedBoxes[box.nextElementSibling.innerText] = box.value
     }
     else{
-      uncheckedBoxes[box.nextSibling.wholeText.trim()] = box.value
+      uncheckedBoxes[box.nextElementSibling.innerText] = box.value
     }
   });
 

@@ -23,7 +23,6 @@ def hello_world():
 @app.route('/init', methods=['GET'])
 def initiate_driver():
     headless = request.args.get("headless", default=False) # set to False default
-    print(headless)
     driver = webHelper.initialize_driver(headless=(True if headless=="True" else False))
 
     return {"data": "initiated", "result": "success"}
