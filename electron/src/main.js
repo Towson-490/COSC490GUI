@@ -13,11 +13,23 @@ let testRoutes = {};
 // Create generalized alert element
 let actionAlert = (type, message)=> {
     var div = document.createElement('div');
-    div.className = "alert alert-" + type;
+    div.className = "alert show fade alert-" + type;
     div.role = "alert";
     var text = document.createTextNode(message);
     div.appendChild(text);
     return div;
+}
+
+ipcRenderer.on('close-alert', (e)=>{
+    $('.alert').replaceWith(actionAlert("warning", "No Test Created"));
+    setTimeout(closeAlert, 1000);
+});
+let replaceAlert=(type, message)=>{
+    $('.alert').replaceWith(actionAlert(type, message));
+    setTimeout(closeAlert, 1000);
+}
+let closeAlert =()=>{
+    $('.alert').alert('close');
 }
 
 // Function for XMLHttpRequests
@@ -36,9 +48,8 @@ let actionAlert = (type, message)=> {
 
 // Create addTestWindow on create test click
 function callAddWindow(){
-    // Get div #website to alert user
-    var div = document.getElementById("website");
-    div.appendChild(actionAlert("info", "Creating Test..."));
+    // Get div #content to alert user
+    $('#content').append(actionAlert("info", "Creating Test..."));
 
     // Create data object to send with ipcRenderer to app.js
     var data ={};
@@ -53,6 +64,9 @@ function callAddWindow(){
 
 // Add test element to mainWindow on add test click from addTestWindow
 ipcRenderer.on('add-test', function (e, data) {
+    replaceAlert("success", "Test Created");
+    //closeAlert();
+
     // Get tests div to append test
     const allTests = document.getElementById('tests');
 

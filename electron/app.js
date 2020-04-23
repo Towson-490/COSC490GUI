@@ -75,6 +75,9 @@ function createMainWindow() {
 
 ipcMain.on('add-test', function (e, data) {
     mainWindow.webContents.send('add-test', data);
+    addTestWindow.onbeforeunload = (e) => {
+        e.returnValue = true;
+    }
     addTestWindow.close();
 });
 
@@ -112,6 +115,11 @@ function createAddWindow(data) {
     // Quit window when closed
     addTestWindow.on('closed', () => {
         addTestWindow = null;
+    });
+    addTestWindow.on('close', (e) => {
+        if (!e.returnValue){
+            mainWindow.webContents.send('close-alert');
+        }
     });
 }
 

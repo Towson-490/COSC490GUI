@@ -7,6 +7,7 @@
     "dev": "(cd py && python api.py) & npm start"
   },
   "dependencies": {
+    "jquery": "^3.5.0",
     "minimist": ">=0.2.1",
     "python-shell": "^1.0.8"
   },
