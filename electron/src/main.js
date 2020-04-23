@@ -11,7 +11,7 @@ let initiated = false;
 let testRoutes = {};
 
 // Create generalized alert element
-let actionAlert = (type, message)=> {
+let actionAlert = (type, message) => {
     var div = document.createElement('div');
     div.className = "alert show fade alert-" + type;
     div.role = "alert";
@@ -20,20 +20,20 @@ let actionAlert = (type, message)=> {
     return div;
 }
 
-ipcRenderer.on('close-alert', (e)=>{
-    $('.alert').replaceWith(actionAlert("warning", "No Test Created"));
-    setTimeout(closeAlert, 1000);
+ipcRenderer.on('close-addTestWindow', (e) => {
+    replaceAlert("warning", "Cancelled add test")
+
 });
-let replaceAlert=(type, message)=>{
+let replaceAlert = (type, message) => {
     $('.alert').replaceWith(actionAlert(type, message));
     setTimeout(closeAlert, 1000);
 }
-let closeAlert =()=>{
+let closeAlert = () => {
     $('.alert').alert('close');
 }
 
 // Function for XMLHttpRequests
- function http(end) {
+function http(end) {
     return new Promise(resolve => {
         const xhttp = new XMLHttpRequest();
         xhttp.onreadystatechange = function () {
@@ -47,12 +47,12 @@ let closeAlert =()=>{
 }
 
 // Create addTestWindow on create test click
-function callAddWindow(){
+function callAddWindow() {
     // Get div #content to alert user
     $('#content').append(actionAlert("info", "Creating Test..."));
 
     // Create data object to send with ipcRenderer to app.js
-    var data ={};
+    var data = {};
     // Get url from websiteURL
     var url = document.getElementById("url").value;
     data.url = url;
@@ -64,9 +64,7 @@ function callAddWindow(){
 
 // Add test element to mainWindow on add test click from addTestWindow
 ipcRenderer.on('add-test', function (e, data) {
-    replaceAlert("success", "Test Created");
-    //closeAlert();
-
+    replaceAlert("success", "Added test");
     // Get tests div to append test
     const allTests = document.getElementById('tests');
 
@@ -89,11 +87,11 @@ ipcRenderer.on('add-test', function (e, data) {
     rowData = document.createElement('td');
 
     // Add list to testRoutes object for test
-    testRoutes[label]=[];
+    testRoutes[label] = [];
 
     // Get tests and add to test row
     // Add routes to testRoutes to cell for test
-    for (const box in data.boxes){
+    for (const box in data.boxes) {
         rowData.appendChild(document.createTextNode(box));
         rowData.appendChild(document.createElement("br"));
         testRoutes[label].push(data.boxes[box]);
@@ -101,36 +99,43 @@ ipcRenderer.on('add-test', function (e, data) {
     testRow.appendChild(rowData);
 
     // Select and assign/reassign clicked test
-    testRow.addEventListener('click', function(){
-        if(testRow.className === "testChoice"){
-            if(clicked){
+    testRow.addEventListener('click', function () {
+        if (testRow.className === "testChoice") {
+            if (clicked) {
                 clicked.className = "testChoice";
             }
             testRow.className = "table-primary clicked";
             clicked = testRow;
-        }else{
+        } else {
             testRow.className = "testChoice";
         }
     });
     allTests.appendChild(testRow);
 });
 
+let updateProgress = (width) => {
+    $('#progress-bar').css('width', width+'%');
+    $('#progress-bar').text(width+"%");
+}
 // Make queries on start click
-async function callTests(){
-    if(clicked){
+async function callTests() {
+    if (clicked) {
+        
         let result = "";
-        if(!initiated){            
+        var currentProgress = 0;
+        if (!initiated) {
             // Initialize driver
             console.log("Initializing Driver");
             var init = "/init"
-            if(document.getElementById("headless").checked){
+            if (document.getElementById("headless").checked) {
                 init += "?headless=True"
             }
             result = await http(init);
 
             // Set initiated to true to not double run tests
-            if (result.result === "success"){
-                initiated = true
+            if (result.result === "success") {
+                updateProgress(currentProgress += 5);
+                initiated = true;
             }
             console.log(result);
             var get = "/get"
@@ -138,12 +143,15 @@ async function callTests(){
             console.log("Getting WebPage: " + get);
             result = await http(get);
             console.log(result);
+            updateProgress(currentProgress += 5);
 
             // Get and run routes from testRoutes object based on test id
             var routes = testRoutes[clicked.id];
+            var percentChange = 90 / routes.length;
             for (const route of routes) {
                 console.log("Running Test for /" + route);
                 result = await http('/' + route);
+                updateProgress(currentProgress += percentChange);
                 alert("Data Found:\n" + result.data +
                     "\n\nResult:\n" + result.result +
                     "\n\nDescription:\n" + result.desc
@@ -155,19 +163,20 @@ async function callTests(){
             console.log(result);
             initiated = false;
             alert("Testing Finished & Processes Stopped")
+            updateProgress(0);
         }
-    }else{
+    } else {
         alert("Must pick test to run");
     }
 }
 
-function clearTests(){
+function clearTests() {
     const allTests = document.getElementById('tests');
     allTests.innerHTML = "";
     count = 0
 }
 
-function stopTests(){
+function stopTests() {
     http('/quit');
     initiated = false;
 }

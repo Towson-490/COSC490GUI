@@ -73,12 +73,13 @@ function createMainWindow() {
     });
 }
 
+let testAdded = false;
+
 ipcMain.on('add-test', function (e, data) {
+    testAdded = true;
     mainWindow.webContents.send('add-test', data);
-    addTestWindow.onbeforeunload = (e) => {
-        e.returnValue = true;
-    }
     addTestWindow.close();
+    testAdded = false;
 });
 
 ipcMain.on('add-window', (e, data) => {
@@ -116,11 +117,11 @@ function createAddWindow(data) {
     addTestWindow.on('closed', () => {
         addTestWindow = null;
     });
-    addTestWindow.on('close', (e) => {
-        if (!e.returnValue){
-            mainWindow.webContents.send('close-alert');
+    addTestWindow.on('close', () => {
+        if(!testAdded){
+            mainWindow.webContents.send('close-addTestWindow');
         }
-    });
+    })
 }
 
 

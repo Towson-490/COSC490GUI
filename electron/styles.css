@@ -8,6 +8,9 @@ body{
 #content{
     min-height: 40vh;
 }
+#createTest{
+    margin-bottom: 1vh;
+}
 #footer{
     margin-bottom: 1vh;
 }
