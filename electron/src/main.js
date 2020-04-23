@@ -1,10 +1,16 @@
 let { ipcRenderer } = require('electron');
 
+// Host for queries
 let url = "http://127.0.0.1:5000";
+// Count to keep test names unique
 let count = 0;
+// To store clicked test element to run
 let clicked = null;
 let initiated = false;
+// To store routes when received by addTestWindow
+let testRoutes = {};
 
+// Function for XMLHttpRequests
  function http(end) {
     return new Promise(resolve => {
         const xhttp = new XMLHttpRequest();
@@ -18,6 +24,7 @@ let initiated = false;
     });
 }
 
+// Create addTestWindow on create test click
 function callAddWindow(){
     // Create data object to send with ipcRenderer to app.js
     var data ={};
@@ -26,21 +33,38 @@ function callAddWindow(){
     data.url = url;
     console.log(data);
 
+    // Send data to ipcMain for addTestWindow
     ipcRenderer.send('add-window', data);
 }
 
+// Add test element to mainWindow on add test click from addTestWindow
 ipcRenderer.on('add-test', function (e, data) {
+    // Get tests div to append test
     const allTests = document.getElementById('tests');
+
+    // Create div for test 
+    n = count++
     const testDiv = document.createElement('div');
-    testDiv.id = ("for " + data.label + count++).replace(/\s+/g, '');
+    label = data.label + n;
+    testDiv.id = (label).replace(/\s+/g, '');
     testDiv.className = "testChoice";
     const h = document.createElement('h3');
-    h.innerText = data.label;
+    h.innerText = label;
     testDiv.appendChild(h);
-    data.boxes.forEach(test => {
-        const testText = document.createTextNode(test + " ");
-        testDiv.appendChild(testText);
-    });
+    // Add list to testRoutes object for test
+    testRoutes[label]=[]
+
+    // Get tests and add to test div
+    // Add routes to testRoutes list for test
+    for (const box in data.boxes){
+        console.log(box +": "+data.boxes[box])
+        const test = document.createElement('li');
+        test.appendChild(document.createTextNode(box))
+        testDiv.appendChild(test);
+        testRoutes[label].push(data.boxes[box])
+    }
+
+    // Select and assign/reassign clicked test
     testDiv.addEventListener('click', function(){
         if(testDiv.className === "testChoice"){
             if(clicked){
@@ -55,12 +79,16 @@ ipcRenderer.on('add-test', function (e, data) {
     allTests.appendChild(testDiv);
 });
 
+// Make queries on start click
 async function callTests(){
     if(clicked){
         let result = "";
-        if(!initiated){
+        if(!initiated){            
+            // Initialize driver
             console.log("Initializing Driver");
             result = await http('/init?headless=False');
+
+            // Set initiated to true to not double run tests
             if (result.result === "success"){
                 initiated = true
             }
@@ -70,24 +98,24 @@ async function callTests(){
             console.log("Getting WebPage: " + get);
             result = await http(get);
             console.log(result);
-        }
 
-        const tests = [];
-        for(let i = 0; i < clicked.childNodes.length; i ++ ){
-            const node = clicked.childNodes[i];
-            if(node.nodeName === "#text"){
-                test = node.data.trim();
-                tests.push(test);
-                console.log("Running Test for " + test);
-                result = await http('/' + test)
-                alert("Data Found:\n" + result.data + "\n\nResult:\n" + result.result + "\n\nDescription:\n" + result.desc);
+            // Get and run routes from testRoutes object based on test id
+            var routes = testRoutes[clicked.id];
+            for (const route of routes) {
+                console.log("Running Test for /" + route);
+                result = await http('/' + route);
+                alert("Data Found:\n" + result.data +
+                    "\n\nResult:\n" + result.result +
+                    "\n\nDescription:\n" + result.desc
+                );
             }
+            // Terminate Driver
+            console.log("Ending Test");
+            result = await http('/quit');
+            console.log(result);
+            initiated = false;
+            alert("Testing Finished & Processes Stopped")
         }
-
-        console.log("Ending Test");
-        result = await http('/quit');
-        console.log(result);
-        alert("Testing Finished & Processes Stopped")
     }else{
         alert("Must pick test to run");
     }

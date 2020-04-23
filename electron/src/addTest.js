@@ -1,6 +1,7 @@
 var { ipcRenderer } = require('electron');
 
 var addData = {} 
+// Get data from main window
 ipcRenderer.on('add-data', function(e, data){
   addData = data;
   console.log(data)
@@ -12,22 +13,23 @@ function getCheckedBoxes(e){
   e.preventDefault();
   var label = document.getElementById('test-label');
   var checkboxes = document.getElementsByName('test');
-  var checkedBoxes = []
+  var checkedBoxes = {}
+  var uncheckedBoxes = {}
 
   // Add checked boxes to array to send to main process
-  for (var i = 0; i < checkboxes.length; i++){
-    if(checkboxes[i].checked){
-      checkedBoxes.push(checkboxes[i].value);
+  checkboxes.forEach(box => {
+    if (box.checked){  
+      checkedBoxes[box.nextSibling.wholeText.trim()] = box.value
     }
-  }
+    else{
+      uncheckedBoxes[box.nextSibling.wholeText.trim()] = box.value
+    }
+  });
 
-  //if no test is selected send all tests to main process
-  if(checkedBoxes.length == 0){
-    checkboxes.forEach(box => {
-      checkedBoxes.push(box.value);
-    });
-  }
-  var data = {'label': label.value, 'boxes': checkedBoxes};
+  var data = {'label': label.value, 
+              'boxes': Object.keys(checkedBoxes).length==0 ? uncheckedBoxes : checkedBoxes
+            };
+  console.log(data)
   ipcRenderer.send('add-test', data);
 }
 

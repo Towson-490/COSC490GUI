@@ -60,3 +60,14 @@ ul{
     overflow: hidden;
     background-color: transparent;
 }
+
+#testList{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+#testDiv{
+    display: flex;
+    flex-direction: row;
+    width: 220px;
+}

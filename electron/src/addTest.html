@@ -10,22 +10,52 @@
 
 <body>
   <form>
+    <label>Enter Test Label:</label><br>
+    <input type="text" id="test-label" value="TestName" autofocus onclick="this.select()"><br>
+    
     <div id="testList">
-      <label>Enter Test Label:</label><br>
-      <input type="text" id="test-label" value="TestName" autofocus onclick="this.select()"><br>
       <label>Choose tests to run:</label><br>
-      <input type="checkbox" name="all-tests" id="all" value="all_tests" checked onclick="allChecked()">
-      <label for="all-tests">Run all tests</label><br>
-      <input type="checkbox" name="test" value="get_fonts">
-      <label for="test">Get page fonts: Test consistency</label><br>
-      <input type="checkbox" name="test" value="get_nogo_text/text">
-      <label for="test">Get page text: Test terms to avoid*Bug*</label><br>
-      <input type="checkbox" name="test" value="get_text_colors">
-      <label for="test">Get text colors: Test consistency</label><br>
-      <input type="checkbox" name="test" value="get_background_colors">
-      <label for="test">Get background colors: Test consistency</label><br>
-      <input type="checkbox" name="test" value="get_nogo_colors/background">
-      <label for="test">Get background colors: Test colors to avoid</label><br>
+      <div id=testDiv>
+        <label for="all-tests">
+          <input type="checkbox" name="all-tests" id="all" value="all_tests" checked onclick="allChecked()">
+          Run all tests
+        </label><br>
+      </div><br>
+      <div id=testDiv>
+        <label for="test">
+          <input type="checkbox" name="test" value="get_fonts">
+          Number of page fonts
+        </label>
+      </div>
+      <label>Test consistency</label><br>
+      <div id=testDiv>
+        <label for="test">
+          <input type="checkbox" name="test" value="get_nogo_text/text">
+          Check page text
+        </label>
+      </div>
+      <label>Test terms to avoid</label><br>
+      <div id=testDiv>
+        <label for="test">
+          <input type="checkbox" name="test" value="get_text_colors">
+          Number of text colors 
+        </label>
+      </div>
+      <label>Test consistency</label><br>
+      <div id=testDiv>
+        <label for="test">
+          <input type="checkbox" name="test" value="get_background_colors">
+          Number of background colors
+        </label>
+      </div>
+      <label>Test consistency</label><br>
+      <div id=testDiv>
+        <label for="test">
+          <input type="checkbox" name="test" value="get_nogo_colors/background">
+          Check background colors
+        </label>
+      </div>
+      <label>Test colors to avoid</label><br>
     </div><br>
     <button type = "submit" onclick="getCheckedBoxes(event)">Add Test</button>
   </form>

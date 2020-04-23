@@ -92,8 +92,8 @@ function createAddWindow(data) {
         parent: mainWindow,
         modal: false,
         frame: true,
-        width: 800,
-        height: 400,
+        width: 350,
+        height: 600,
         title: 'Add Test'
     });
 
@@ -104,6 +104,7 @@ function createAddWindow(data) {
         slashes: true,
     }));
 
+    // Send data to addTestWindow from mainWindow
     addTestWindow.webContents.on('did-finish-load', () => {
         addTestWindow.webContents.send('add-data', data);
     });
