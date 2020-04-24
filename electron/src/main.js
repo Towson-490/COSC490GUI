@@ -75,18 +75,19 @@ const actionAlert = (type, message) => {
     var text = document.createTextNode(message);
     div.appendChild(text);
     return div;
-}
+};
 
 const appendInfoAlert = (attr, value, message) => {
     let find = (attr == 'id' ? "#" : ".") + value;
     $(find).append(actionAlert("info", message));
-}
+};
+
 const replaceAlert = (type, message) => {
     $('.alert').replaceWith(actionAlert(type, message));
-}
+};
 const closeAlert = () => {
     $('.alert').alert('close');
-}
+};
 
 // Function for XMLHttpRequests
 function http(end) {
@@ -121,7 +122,7 @@ function callAddWindow() {
 const updateProgress = (width) => {
     $('#progress-bar').css('width', width + '%');
     $('#progress-bar').text(width + "%");
-}
+};
 
 // Make queries on start click
 async function callTests() {
@@ -233,4 +234,5 @@ function clearTests() {
 function stopTests() {
     http('/quit');
     initiated = false;
+    updateProgress(0);
 }
