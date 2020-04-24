@@ -269,14 +269,14 @@ https://www.nngroup.com/articles/response-times-3-important-limits/
 def check_system_status(timeout):
   global driver
   start_url = driver.current_url
-  search_string = "This is a search string"
+  search_string = "Vampires"
 
   driver.maximize_window()
   """Set page load timeout for delayed system response"""
   driver.set_page_load_timeout(timeout)
   start_html = driver.page_source  
 
-  test_driver = create_driver("false", incognito=True)
+  test_driver = create_driver(headless=False, incognito=True)
 
   """
   Simulate user input and delayed response

@@ -173,11 +173,11 @@ def get_avg_response():
 def test():
     headless = request.args.get("headless", False) # set to False default
     print(webHelper.initialize_driver(headless))
-    print(get_url())
+    print(webHelper.get_url("https://www.towson.edu/"))
     
     start = time()
     # print(webHelper.check_system_status(5))
-    print(webHelper.entry_validation_check())
+    print(webHelper.check_system_status(10))
     print(time() - start)
 
     print(quit_driver())
