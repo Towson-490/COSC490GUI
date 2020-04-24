@@ -48,7 +48,9 @@ function createMainWindow() {
     mainWindow = new BrowserWindow({
         webPreferences: {
             nodeIntegration: true
-        }
+        },
+        width: 850,
+        height: 620,
     });
 
     // Load html file into window
@@ -73,16 +75,21 @@ function createMainWindow() {
     });
 }
 
+let testAdded = false;
+
 ipcMain.on('add-test', function (e, data) {
+    testAdded = true;
     mainWindow.webContents.send('add-test', data);
     addTestWindow.close();
+    testAdded = false;
 });
 
-ipcMain.on('add-window', (e) => {
-    createAddWindow();
+ipcMain.on('add-window', (e, data) => {
+    createAddWindow(data);
 });
+
 // Handle create add window
-function createAddWindow() {
+function createAddWindow(data) {
     // Create new window
     addTestWindow = new BrowserWindow({
         webPreferences: {
@@ -91,8 +98,8 @@ function createAddWindow() {
         parent: mainWindow,
         modal: false,
         frame: true,
-        width: 300,
-        height: 400,
+        width: 350,
+        height: 600,
         title: 'Add Test'
     });
 
@@ -103,11 +110,22 @@ function createAddWindow() {
         slashes: true,
     }));
 
+    // Send data to addTestWindow from mainWindow
+    addTestWindow.webContents.on('did-finish-load', () => {
+        addTestWindow.webContents.send('add-data', data);
+    });
+
     // Quit window when closed
     addTestWindow.on('closed', () => {
         addTestWindow = null;
     });
+    addTestWindow.on('close', () => {
+        if(!testAdded){
+            mainWindow.webContents.send('close-addTestWindow');
+        }
+    })
 }
+
 
 const mainMenuTemplate = [
     {

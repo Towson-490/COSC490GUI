@@ -23,10 +23,9 @@ def hello_world():
 @app.route('/init', methods=['GET'])
 def initiate_driver():
     headless = request.args.get("headless", default=False) # set to False default
-    print(headless)
     driver = webHelper.initialize_driver(headless=(True if headless=="True" else False))
 
-    return {"data": "initiated", "result": "success"}
+    return {"data": "initiated", "status": "success"}
 
 
 """
@@ -35,9 +34,10 @@ Must be called before other definitions
 """
 @app.route('/get', methods=['GET'])
 def get_url():
-    webHelper.get_url()
+    url = request.args.get("url", default="https://www.phptravels.net")
+    webHelper.get_url(url)
 
-    return {"data": "webpage contacted", "result": "success"}
+    return {"data": "webpage contacted", "status": "success"}
 
 
 """Close instance of driver"""  
@@ -46,7 +46,7 @@ def quit_driver():
 
     webHelper.quit_driver()
   
-    return {"data": "stopped", "result": "success"}
+    return {"data": "stopped", "status": "success"}
 
 
 """Save document of source to inspect locally"""
@@ -63,7 +63,7 @@ def get_element_fonts():
     fonts = webHelper.get_element_fonts()
     result, desc = quantitativeAnalysis(int(acceptable), fonts)
 
-    return {"data": " ".join(fonts), "result": result, "desc": desc}
+    return {"data": " ".join(fonts), "result": result, "desc": desc, "status": "success"}
 
 
 """Get unique text colors on page"""
@@ -73,7 +73,7 @@ def get_text_colors():
     colors = webHelper.get_text_colors()
     result, desc = quantitativeAnalysis(10, colors)
 
-    return {"data": " ".join(colors), "result": result, "desc": desc}
+    return {"data": " ".join(colors), "result": result, "desc": desc, "status": "success"}
 
 
 """Initialize to be used globally"""
@@ -87,7 +87,7 @@ def get_background_colors():
     background_colors = webHelper.get_background_colors()
     result, desc = quantitativeAnalysis(10, background_colors)
 
-    return {"data": " ".join(background_colors), "result": result, "desc": desc}
+    return {"data": " ".join(background_colors), "result": result, "desc": desc, "status": "success"}
 
 
 """Get quantitative analysis of similar definitions to determine pass/fail"""
@@ -98,7 +98,7 @@ def quantitativeAnalysis(passNum, arr):
     return result, desc
 
 
-"""Get whether colors used are included in NoGoColors.txt"""
+"""Get whether colors used are included in data/NoGoColors.txt"""
 @app.route('/get_nogo_colors/<choice>', methods=['GET'])
 def get_nogo_colors(choice):
     global background_colors
@@ -107,23 +107,22 @@ def get_nogo_colors(choice):
         if background_colors is None:
             background_colors = webHelper.get_background_colors()
 
-        colors = webHelper.nogo_search('noGoColors.txt', background_colors) 
+        colors = webHelper.nogo_search('data/noGoColors.txt', background_colors) 
 
     if choice == "text":
         pass
 
     if colors == "error":
-        return {"data": colors, "result": "Fail", "desc": "noGoColors.txt file not found"}
+        return {"data": colors, "result": "Fail", "desc": "data/noGoColors.txt file not found", "status": "success"}
     else:
         if colors:
-            return {"data": " ".join(colors), "result": "Fail", "desc": "No-go colors were found"}
+            return {"data": " ".join(colors), "result": "Fail", "desc": "No-go colors were found", "status": "success"}
         else:
-            return {"data": "None", "result": "Pass", "desc": "No No-go colors were found"}
+            return {"data": "None", "result": "Pass", "desc": "No No-go colors were found", "status": "success"}
 
 
 inner_text = None
-###############################################
-#                   ***FIX***
+
 @app.route('/get_nogo_text/text', methods=['GET'])
 def get_nogo_text():
     global inner_text
@@ -131,32 +130,9 @@ def get_nogo_text():
     inner_text = webHelper.get_inner_html()
 
     if len(inner_text) > 0:
-        return {"data": " ".join(inner_text), "result": "Fail", "desc": "No-go words were found"}
+        return {"data": " ".join(inner_text), "result": "Fail", "desc": "No-go words were found", "status": "success"}
     else:
-        return {"data": "None", "result": "Pass", "desc": "No No-go colors were found"}
-
-# @app.route('/get_nogo_text/<choice>')
-# def get_nogo_text(choice):
-#     global inner_text
-#     global driver
-    
-#     if choice == "text":
-#     #     if inner_text is None:
-#     #         inner_text = webHelper.get_inner_html(driver)
-
-#     #     text = webHelper.nogo_colors('noGoText.txt', inner_text) 
-#         text = "INCOMPLETE: Disregard"
-
-#     if text == "error":
-#         return {"data": text, "result": "Fail", "desc": "noGoText.txt file not found"}
-#     else:
-#         if text:
-#             return {"data": " ".join(text), "result": "Fail", "desc": "No-go text was found"}
-#         else:
-#             return {"data": "None", "result": "Pass", "desc": "No No-go text was found"}
-
-#                   ***FIX***
-#######################################################
+        return {"data": "None", "result": "Pass", "desc": "No No-go colors were found", "status": "success"}
 
 
 """
@@ -168,6 +144,9 @@ https://www.nngroup.com/articles/response-times-3-important-limits/
 """
 @app.route('/get_avg_response', methods=['GET'])
 def get_avg_response():
+    acceptable = request.args.get("acceptable", default=10000)
+    acceptable_back = request.args.get("back", default= 5000)
+    acceptable_front = request.args.get("front", default= 5000)
 
     backend_performance, frontend_performance = webHelper.check_response()
 
@@ -187,7 +166,7 @@ def get_avg_response():
 
     desc = "Acceptable average"
 
-    return {"data": [backend_avg, frontend_avg], "result": [backend_result, frontend_result], "desc": desc}
+    return {"data": [backend_avg, frontend_avg], "result": [backend_result, frontend_result], "desc": desc, "status": "success"}
 
 
 """Route to test webhelper definitions""" 
@@ -195,11 +174,11 @@ def get_avg_response():
 def test():
     headless = request.args.get("headless", False) # set to False default
     print(webHelper.initialize_driver(headless))
-    print(get_url())
+    print(webHelper.get_url("https://www.towson.edu/"))
     
     start = time()
     # print(webHelper.check_system_status(5))
-    print(webHelper.entry_validation_check())
+    print(webHelper.check_system_status(10))
     print(time() - start)
 
     print(quit_driver())

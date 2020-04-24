@@ -1,62 +1,53 @@
+/* Main window */
 body{
     background: Gainsboro;
-    text-align: center;
     min-width: 50%;
 }
-
-.relative {
-    overflow: hidden;
-    position: fixed;
-    width: 100%;
-    bottom: 0;
+#body-container{
+    min-height: 100vh;
+}
+#content{
+    min-height: 34vh;
+}
+#createTest{
+    margin-bottom: 1vh;
+}
+#footer,
+#footer-btns{
+    margin-bottom: 1vh;
+}
+.alert-container{
+    min-height: 9vh;
+}
+.progress{
+    margin-bottom: 1rem;
+}
+.alert.alert-info{
+    background-color: #95dbe9;
+}
+.table-bordered{
+    border-color: #a2a2a3;
+}
+.table-primary:hover{
+    background-color: rgb(45, 136, 189);
+}
+.table-primary.clicked th, 
+.table-primary.clicked td,
+.btn.btn-primary{
+    background-color: rgb(45, 136, 189);
+}
+.button.btn-warning{
+    background-color: rgb(202, 163, 46);
+}
+.btn.btn-success{
+    background-color: rgb(21, 172, 96);
+}
+.btn.btn-danger{
+    background-color: rgb(206, 74, 22);
 }
 
-div.testChoice:hover {
-    background: rgba(7, 99, 53, 1);
-    color: rgba(255,255,255,1);
-}
-.clicked {
-    background: rgba(7, 99, 53, 1);
-    color: rgba(255,255,255,1);
-}
-
-button {
-    background: rgba(7, 99, 53, .1);
-    border: 3px solid rgba(7, 99, 53, 1);
-    border-radius: 5px;
-    color: rgba(7, 99, 53, 1);
-    cursor: pointer;
-    line-height: 40px;
-    font-size: 30px;
-    outline: none;
-    padding: 0 20px;
-    transition: all .3s;
-}
-button:hover {
-    background: rgba(7, 99, 53, 1);
-    color: rgba(255,255,255,1);
-}
-p {
-    font-size: 20px;
-    font-weight: bold;
-}
-input {
-    margin-top: .5em;
-    margin-bottom: .5em;
-}
-hr {
-    display: block;
-    margin-top: 0.5em;
-    margin-bottom: 0.5em;
-    margin-left: auto;
-    margin-right: auto;
-    border-style: inset;
-    border-width: 1px;
-}
-ul{
-    list-style-type: none;
-    margin: 0;
-    padding: 0;
-    overflow: hidden;
-    background-color: transparent;
+/* Add test window */
+#edit-value-modal{
+    padding-top: 0;
+    padding-bottom: 0;
 }
