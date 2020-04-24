@@ -8,6 +8,8 @@ ipcRenderer.on('add-data', function(e, data){
   
 });
 
+var
+
 // Handle submit button
 function getCheckedBoxes(e){
   e.preventDefault();

@@ -1,7 +1,7 @@
-let { ipcRenderer } = require('electron');
+const { ipcRenderer } = require('electron');
 
 // Host for queries
-let url = "http://127.0.0.1:5000";
+const url = "http://127.0.0.1:5000";
 // Count to keep test names unique
 let count = 0;
 // To store clicked test element to run
@@ -11,7 +11,7 @@ let initiated = false;
 let testRoutes = {};
 
 // Create generalized alert element
-let actionAlert = (type, message) => {
+const actionAlert = (type, message) => {
     var div = document.createElement('div');
     div.className = "alert show fade alert-" + type;
     div.role = "alert";
@@ -24,14 +24,14 @@ ipcRenderer.on('close-addTestWindow', (e) => {
     replaceAlert("warning", "Cancelled add test")
     setTimeout(closeAlert, 1000);
 });
-let appendInfoAlert = (attr, value, message) => {
-    var find = (attr == 'id' ? "#" : ".") + value;
+const appendInfoAlert = (attr, value, message) => {
+    let find = (attr == 'id' ? "#" : ".") + value;
     $(find).append(actionAlert("info", message));
 }
-let replaceAlert = (type, message) => {
+const replaceAlert = (type, message) => {
     $('.alert').replaceWith(actionAlert(type, message));
 }
-let closeAlert = () => {
+const closeAlert = () => {
     $('.alert').alert('close');
 }
 
@@ -55,9 +55,9 @@ function callAddWindow() {
     appendInfoAlert("id", "test-alerts", "Creating test...");
 
     // Create data object to send with ipcRenderer to app.js
-    var data = {};
+    let data = {};
     // Get url from websiteURL
-    var url = document.getElementById("url").value;
+    let url = document.getElementById("url").value;
     data.url = url;
     console.log(data);
 
@@ -70,11 +70,11 @@ ipcRenderer.on('add-test', function (e, data) {
     replaceAlert("success", "Added test");
     setTimeout(closeAlert, 1000);
     // Get tests div to append test
-    const allTests = document.getElementById('tests');
+    let allTests = document.getElementById('tests');
 
     // Create div for test 
-    var n = ++count
-    var label = data.label;
+    let n = ++count
+    let label = data.label;
     const testRow = document.createElement('tr');
     testRow.id = `${label}-${n}`;
     testRow.className = "testChoice";
@@ -84,7 +84,7 @@ ipcRenderer.on('add-test', function (e, data) {
     rowHead.appendChild(document.createTextNode(n));
     testRow.appendChild(rowHead);
 
-    var rowData = document.createElement('td');
+    let rowData = document.createElement('td');
     rowData.appendChild(document.createTextNode(label))
     testRow.appendChild(rowData);
 
@@ -95,7 +95,7 @@ ipcRenderer.on('add-test', function (e, data) {
 
     // Get tests and add to test row
     // Add routes to testRoutes to cell for test
-    for (const box in data.boxes) {
+    for (let box in data.boxes) {
         rowData.appendChild(document.createTextNode(box));
         rowData.appendChild(document.createElement("br"));
         //testRoutes[label].push(data.boxes[box]);
@@ -117,7 +117,7 @@ ipcRenderer.on('add-test', function (e, data) {
     allTests.appendChild(testRow);
 });
 
-let updateProgress = (width) => {
+const updateProgress = (width) => {
     $('#progress-bar').css('width', width + '%');
     $('#progress-bar').text(width + "%");
 }
@@ -129,7 +129,7 @@ async function callTests() {
         $(".modal-body").empty();
         $('.modal-title').text("Test Results: " + clicked.id);
         let result = "";
-        var currentProgress = 0;
+        let currentProgress = 0;
 
         if (!initiated) {
             $(".modal-body").append(`<h5>Setup</h5><hr>`);
@@ -138,7 +138,7 @@ async function callTests() {
 
             // Initialize driver
             appendInfoAlert("id", "log-alerts", "Initializing Driver...");
-            var init = "/init"
+            let init = "/init"
             if (document.getElementById("headless").checked) {
                 init += "?headless=True"
             }
@@ -152,8 +152,8 @@ async function callTests() {
                 updateProgress(currentProgress += 5);
 
                 initiated = true;
-                var get = "/get";
-                var url = document.getElementById("url").value
+                let get = "/get";
+                let url = document.getElementById("url").value
 
                 get += "?url=" + url
                 replaceAlert("info", `Contacting Website: ${url}...`);
@@ -165,9 +165,9 @@ async function callTests() {
                     updateProgress(currentProgress += 5);
 
                     // Get and run routes from testRoutes object based on test id
-                    var routes = testRoutes[clicked.id];
+                    let routes = testRoutes[clicked.id];
                     console.log(routes);
-                    var percentChange = 90 / Object.keys(routes).length;
+                    let percentChange = 90 / Object.keys(routes).length;
 
                     $(".modal-body").append(`<h5>Testing</h5><hr>`);
                     for (const route in routes) {
@@ -224,7 +224,7 @@ async function callTests() {
 }
 
 function clearTests() {
-    const allTests = document.getElementById('tests');
+    let allTests = document.getElementById('tests');
     allTests.innerHTML = "";
     count = 0
 }
