@@ -25,7 +25,7 @@ def initiate_driver():
     headless = request.args.get("headless", default=False) # set to False default
     driver = webHelper.initialize_driver(headless=(True if headless=="True" else False))
 
-    return {"data": "initiated", "result": "success"}
+    return {"data": "initiated", "status": "success"}
 
 
 """
@@ -37,7 +37,7 @@ def get_url():
     url = request.args.get("url", default="https://www.phptravels.net")
     webHelper.get_url(url)
 
-    return {"data": "webpage contacted", "result": "success"}
+    return {"data": "webpage contacted", "status": "success"}
 
 
 """Close instance of driver"""  
@@ -46,7 +46,7 @@ def quit_driver():
 
     webHelper.quit_driver()
   
-    return {"data": "stopped", "result": "success"}
+    return {"data": "stopped", "status": "success"}
 
 
 """Save document of source to inspect locally"""
@@ -62,7 +62,7 @@ def get_element_fonts():
     fonts = webHelper.get_element_fonts()
     result, desc = quantitativeAnalysis(6, fonts)
 
-    return {"data": " ".join(fonts), "result": result, "desc": desc}
+    return {"data": " ".join(fonts), "result": result, "desc": desc, "status": "success"}
 
 
 """Get unique text colors on page"""
@@ -72,7 +72,7 @@ def get_text_colors():
     colors = webHelper.get_text_colors()
     result, desc = quantitativeAnalysis(10, colors)
 
-    return {"data": " ".join(colors), "result": result, "desc": desc}
+    return {"data": " ".join(colors), "result": result, "desc": desc, "status": "success"}
 
 
 """Initialize to be used globally"""
@@ -86,7 +86,7 @@ def get_background_colors():
     background_colors = webHelper.get_background_colors()
     result, desc = quantitativeAnalysis(10, background_colors)
 
-    return {"data": " ".join(background_colors), "result": result, "desc": desc}
+    return {"data": " ".join(background_colors), "result": result, "desc": desc, "status": "success"}
 
 
 """Get quantitative analysis of similar definitions to determine pass/fail"""
@@ -112,12 +112,12 @@ def get_nogo_colors(choice):
         pass
 
     if colors == "error":
-        return {"data": colors, "result": "Fail", "desc": "data/noGoColors.txt file not found"}
+        return {"data": colors, "result": "Fail", "desc": "data/noGoColors.txt file not found", "status": "success"}
     else:
         if colors:
-            return {"data": " ".join(colors), "result": "Fail", "desc": "No-go colors were found"}
+            return {"data": " ".join(colors), "result": "Fail", "desc": "No-go colors were found", "status": "success"}
         else:
-            return {"data": "None", "result": "Pass", "desc": "No No-go colors were found"}
+            return {"data": "None", "result": "Pass", "desc": "No No-go colors were found", "status": "success"}
 
 
 inner_text = None
@@ -129,9 +129,9 @@ def get_nogo_text():
     inner_text = webHelper.get_inner_html()
 
     if len(inner_text) > 0:
-        return {"data": " ".join(inner_text), "result": "Fail", "desc": "No-go words were found"}
+        return {"data": " ".join(inner_text), "result": "Fail", "desc": "No-go words were found", "status": "success"}
     else:
-        return {"data": "None", "result": "Pass", "desc": "No No-go colors were found"}
+        return {"data": "None", "result": "Pass", "desc": "No No-go colors were found", "status": "success"}
 
 
 """
@@ -165,7 +165,7 @@ def get_avg_response():
 
     desc = "Acceptable average"
 
-    return {"data": [backend_avg, frontend_avg], "result": [backend_result, frontend_result], "desc": desc}
+    return {"data": [backend_avg, frontend_avg], "result": [backend_result, frontend_result], "desc": desc, "status": "success"}
 
 
 """Route to test webhelper definitions""" 

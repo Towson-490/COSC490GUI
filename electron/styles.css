@@ -6,13 +6,17 @@ body{
     min-height: 100vh;
 }
 #content{
-    min-height: 40vh;
+    min-height: 34vh;
 }
 #createTest{
     margin-bottom: 1vh;
 }
-#footer{
+#footer,
+#footer-btns{
     margin-bottom: 1vh;
+}
+.alert-container{
+    min-height: 9vh;
 }
 .progress{
     margin-bottom: 1rem;

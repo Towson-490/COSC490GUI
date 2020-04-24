@@ -22,11 +22,14 @@ let actionAlert = (type, message) => {
 
 ipcRenderer.on('close-addTestWindow', (e) => {
     replaceAlert("warning", "Cancelled add test")
-
+    setTimeout(closeAlert, 1000);
 });
+let appendInfoAlert = (attr, value, message) => {
+    var find = (attr == 'id' ? "#" : ".") + value;
+    $(find).append(actionAlert("info", message));
+}
 let replaceAlert = (type, message) => {
     $('.alert').replaceWith(actionAlert(type, message));
-    setTimeout(closeAlert, 1000);
 }
 let closeAlert = () => {
     $('.alert').alert('close');
@@ -49,7 +52,7 @@ function http(end) {
 // Create addTestWindow on create test click
 function callAddWindow() {
     // Get div #content to alert user
-    $('#content').append(actionAlert("info", "Creating Test..."));
+    appendInfoAlert("id", "test-alerts", "Creating test...");
 
     // Create data object to send with ipcRenderer to app.js
     var data = {};
@@ -65,6 +68,7 @@ function callAddWindow() {
 // Add test element to mainWindow on add test click from addTestWindow
 ipcRenderer.on('add-test', function (e, data) {
     replaceAlert("success", "Added test");
+    setTimeout(closeAlert, 1000);
     // Get tests div to append test
     const allTests = document.getElementById('tests');
 
@@ -72,7 +76,7 @@ ipcRenderer.on('add-test', function (e, data) {
     var n = ++count
     var label = data.label;
     const testRow = document.createElement('tr');
-    testRow.id = (label).replace(/\s+/g, '');
+    testRow.id = `${label}-${n}`;
     testRow.className = "testChoice";
 
     const rowHead = document.createElement('th');
@@ -87,14 +91,14 @@ ipcRenderer.on('add-test', function (e, data) {
     rowData = document.createElement('td');
 
     // Add list to testRoutes object for test
-    testRoutes[label] = [];
+    testRoutes[testRow.id] = data.boxes;
 
     // Get tests and add to test row
     // Add routes to testRoutes to cell for test
     for (const box in data.boxes) {
         rowData.appendChild(document.createTextNode(box));
         rowData.appendChild(document.createElement("br"));
-        testRoutes[label].push(data.boxes[box]);
+        //testRoutes[label].push(data.boxes[box]);
     }
     testRow.appendChild(rowData);
 
@@ -114,59 +118,108 @@ ipcRenderer.on('add-test', function (e, data) {
 });
 
 let updateProgress = (width) => {
-    $('#progress-bar').css('width', width+'%');
-    $('#progress-bar').text(width+"%");
+    $('#progress-bar').css('width', width + '%');
+    $('#progress-bar').text(width + "%");
 }
+
 // Make queries on start click
 async function callTests() {
     if (clicked) {
-        
+        $("#modal-btn").prop("hidden", true);
+        $(".modal-body").empty();
+        $('.modal-title').text("Test Results: " + clicked.id);
         let result = "";
         var currentProgress = 0;
+
         if (!initiated) {
+            $(".modal-body").append(`<h5>Setup</h5><hr>`);
+            $(".modal-body").append("<dl id='modal-dl-setup'></dl>");
+            $("#modal-dl-setup").append(`<dt>Headless Mode:</dt><dd>${$("#headless").prop("checked")}</dd>`);
+
             // Initialize driver
-            console.log("Initializing Driver");
+            appendInfoAlert("id", "log-alerts", "Initializing Driver...");
             var init = "/init"
             if (document.getElementById("headless").checked) {
                 init += "?headless=True"
             }
+
             result = await http(init);
+            $("#modal-dl-setup").append(`<dt>Initialize Driver:</dt><dd>${result.status}</p></dd>`);
 
             // Set initiated to true to not double run tests
-            if (result.result === "success") {
+            if (result.status === "success") {
+                replaceAlert("success", "Driver initialized");
                 updateProgress(currentProgress += 5);
-                initiated = true;
-            }
-            console.log(result);
-            var get = "/get"
-            get += "?url=" + document.getElementById("url").value
-            console.log("Getting WebPage: " + get);
-            result = await http(get);
-            console.log(result);
-            updateProgress(currentProgress += 5);
 
-            // Get and run routes from testRoutes object based on test id
-            var routes = testRoutes[clicked.id];
-            var percentChange = 90 / routes.length;
-            for (const route of routes) {
-                console.log("Running Test for /" + route);
-                result = await http('/' + route);
-                updateProgress(currentProgress += percentChange);
-                alert("Data Found:\n" + result.data +
-                    "\n\nResult:\n" + result.result +
-                    "\n\nDescription:\n" + result.desc
-                );
+                initiated = true;
+                var get = "/get";
+                var url = document.getElementById("url").value
+
+                get += "?url=" + url
+                replaceAlert("info", `Contacting Website: ${url}...`);
+                result = await http(get);
+
+                $("#modal-dl-setup").append(`<dt>Contacting Website:</dt><dd>${result.status}</dd>`);
+                if (result.status === "success") {
+                    replaceAlert("success", "Website contacted: " + url + "...");
+                    updateProgress(currentProgress += 5);
+
+                    // Get and run routes from testRoutes object based on test id
+                    var routes = testRoutes[clicked.id];
+                    console.log(routes);
+                    var percentChange = 90 / Object.keys(routes).length;
+
+                    $(".modal-body").append(`<h5>Testing</h5><hr>`);
+                    for (const route in routes) {
+                        replaceAlert("info", "Running Test For " + route);
+                        result = await http('/' + routes[route]);
+
+                        $(".modal-body").append("<div id='modal-testing-container' class='container'></div>")
+                        $("#modal-testing-container").append("<dl id='modal-dl-testing'></dl>");
+                        $("#modal-dl-testing").append(`<dt>Test: ${route}</dt><dd>${result.status}</dd>`);
+                        if(result.status === "success"){
+                            $("#modal-dl-testing").append(`<dt>Data Found:</dt><dd>${result.data}</dd>`);
+                            $("#modal-dl-testing").append(`<dt>Pass/Fail:</dt><dd>${result.result}</dd>`);
+                            $("#modal-dl-testing").append(`<dt>Description:</dt><dd>${result.desc}</dd>`);
+                        }
+                        $("#modal-dl-testing").append("<hr>");
+                        updateProgress(currentProgress += percentChange);
+                    }
+                    // Terminate Driver
+                    replaceAlert("info", "Stopping Driver...");
+
+                    $(".modal-body").append(`<h5>Teardown</h5><hr>`);
+                    $(".modal-body").append("<dl id='modal-dl-teardown'></dl>");
+
+                    result = await http('/quit');
+
+                    $("#modal-dl-teardown").append(`<dt>Driver stopped:</dt><dd>${result.status}</dd>`);
+                    if(result.status === "success"){
+                        initiated = false;
+
+                        replaceAlert("success", "Driver stopped");
+                        replaceAlert("success", "Testing Finished & Processes Stopped");
+                        setTimeout(closeAlert, 1000);
+                        updateProgress(0);
+                    }else{
+                        replaceAlert("danger", "Driver failed to stop");
+                    }
+                } else {
+                    replaceAlert("danger", "Failed to contact Website");
+                }
+            } else {
+                replaceAlert("danger", "Failed to initiate driver");
             }
-            // Terminate Driver
-            console.log("Ending Test");
-            result = await http('/quit');
-            console.log(result);
-            initiated = false;
-            alert("Testing Finished & Processes Stopped")
-            updateProgress(0);
+        } else {
+            console.log("driver already initiated");
+            replaceAlert("danger", "Driver already initiated");
         }
+        $("#modal-btn").prop("hidden", false);
     } else {
-        alert("Must pick test to run");
+        $('.modal-title').text("No test chosen");
+        $('.modal-body').text("Choose test from list to start");
+        $("#modal-save").prop("hidden", true);
+        $('#modal').modal();
     }
 }
 

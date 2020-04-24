@@ -48,7 +48,9 @@ function createMainWindow() {
     mainWindow = new BrowserWindow({
         webPreferences: {
             nodeIntegration: true
-        }
+        },
+        width: 850,
+        height: 620,
     });
 
     // Load html file into window
