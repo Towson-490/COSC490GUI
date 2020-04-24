@@ -98,7 +98,7 @@ function createAddWindow(data) {
         parent: mainWindow,
         modal: false,
         frame: true,
-        width: 350,
+        width: 400,
         height: 600,
         title: 'Add Test'
     });

@@ -11,25 +11,24 @@
 <body>
   <div class="container">
     <div id="body-header" class="row-align-items-start">
-      <h1 class="page-header">Add Tests</h1>
+      <h1 class="page-header">Add Test Group</h1>
     </div>
     <hr>
     <div id="body-content">
       <form>
         <div class="form-group" class="row-align-items-center">
-          <p>Test Label</p>
-          <input class="form-control" type="text" id="test-label" value="TestName" autofocus onclick="this.select()">
+          <p>Group Label</p>
+          <input class="form-control" type="text" id="test-label" value="" placeholder="Enter label" autofocus onclick="this.select()">
           <hr>
           <div id="testList">
-            <p><u>Choose tests to run:</u></p>
+            <p><u>Choose tests to include:</u></p>
             <div class="form-check" id=testDiv>
               <!--All Tests option-->
-              <input class="form-check-input" type="checkbox" name="all-tests" id="all" value="all_tests" checked
-                onclick="allChecked()">
-              <label class="form-check-label" for="all-tests">Run all tests</label><br>
+              <input class="form-check-input" type="checkbox" name="all-tests" id="all" value="all_tests">
+              <label class="form-check-label" for="all-tests">Select/Deselect All</label><br>
             </div>
             <blockquote class="blockquote">
-              <footer class="blockquote-footer">Default choice if none checked</footer>
+              <footer class="blockquote-footer">Select/Deselect all test options</footer>
             </blockquote>
             <!--End all tests option-->
             <!---Test list to be added via js-->
@@ -40,7 +39,7 @@
       </form>
     </div>
     <div id="body-footer" class="row-align-items-end">
-      <button type="submit" class="btn btn-success" onclick="getCheckedBoxes(event)">Add Test</button>
+      <button type="submit" class="btn btn-success" onclick="getCheckedBoxes(event)">Add Group</button>
     </div>
   </div>
   <div class="modal fade" id="editModal" tabindex="-1" role="dialog" aria-labelledby="editModalLabel"
@@ -65,16 +64,6 @@
       </div>
     </div>
   </div>
-  <script>
-    allTests = document.getElementsByName('test');
-    allTests.forEach(test => {
-      test.addEventListener('click', function () {
-        if (document.getElementById('all').checked) {
-          document.getElementById('all').checked = false;
-        }
-      });
-    });
-  </script>
   <script>if (typeof module === 'object') { window.module = module; module = undefined; }</script>
   <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js"
     integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n"
