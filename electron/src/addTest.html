@@ -6,24 +6,24 @@
   <title>Add Test</title>
   <link rel="stylesheet" href="../css/bootstrap.min.css">
   <link rel="stylesheet" href="../styles.css">
-  <script type="text/javascript" src="addTest.js"></script>
 </head>
 
 <body>
   <div class="container">
-    <div class="header">
+    <div id="body-header" class="row-align-items-start">
       <h1 class="page-header">Add Tests</h1>
     </div>
     <hr>
-    <div class="container">
+    <div id="body-content">
       <form>
-       <div class="form-group">
+        <div class="form-group" class="row-align-items-center">
           <p>Test Label</p>
           <input class="form-control" type="text" id="test-label" value="TestName" autofocus onclick="this.select()">
           <hr>
           <div id="testList">
             <p><u>Choose tests to run:</u></p>
             <div class="form-check" id=testDiv>
+              <!--All Tests option-->
               <input class="form-check-input" type="checkbox" name="all-tests" id="all" value="all_tests" checked
                 onclick="allChecked()">
               <label class="form-check-label" for="all-tests">Run all tests</label><br>
@@ -31,51 +31,42 @@
             <blockquote class="blockquote">
               <footer class="blockquote-footer">Default choice if none checked</footer>
             </blockquote>
-            <div class="form-check" id=testDiv>
-              <input class="form-check-input" type="checkbox" name="test" value="get_fonts">
-              <label class="form-check-label" for="test">Number of page fonts</label>
-            </div>
-            <blockquote class="blockquote">
-              <footer class="blockquote-footer">Test consistency</footer>
-            </blockquote>
-            <div class="form-check" id=testDiv>
-              <input class="form-check-input" type="checkbox" name="test" value="get_nogo_text/text">
-              <label class="form-check-label" for="test">Check page text</label>
-            </div>
-            <blockquote class="blockquote">
-              <footer class="blockquote-footer">Test terms to avoid</footer>
-            </blockquote>
-            <div class="form-check" id=testDiv>
-              <input class="form-check-input" type="checkbox" name="test" value="get_text_colors">
-              <label class="form-check-label" for="test">
-                Number of text colors</label>
-            </div>
-            <blockquote class="blockquote">
-              <footer class="blockquote-footer">Test consistency</footer>
-            </blockquote>
-            <div class="form-check" id=testDiv>
-              <input class="form-check-input" type="checkbox" name="test" value="get_background_colors">
-              <label class="form-check-label" for="test">Number of background colors</label>
-            </div>
-            <blockquote class="blockquote">
-              <footer class="blockquote-footer">Test consistency</footer>
-            </blockquote>
-            <div class="form-check" id=testDiv>
-              <input class="form-check-input" type="checkbox" name="test" value="get_nogo_colors/background">
-              <label class="form-check-label" for="test">Check background colors</label>
-            </div>
-            <blockquote class="blockquote">
-              <footer class="blockquote-footer">Test colors to avoid</footer>
-            </blockquote>
+            <!--End all tests option-->
+            <!---Test list to be added via js-->
+
           </div>
           <hr>
-          <button type="submit" class="btn btn-success" onclick="getCheckedBoxes(event)">Add Test</button>
-       </div>
+        </div>
       </form>
+    </div>
+    <div id="body-footer" class="row-align-items-end">
+      <button type="submit" class="btn btn-success" onclick="getCheckedBoxes(event)">Add Test</button>
+    </div>
+  </div>
+  <div class="modal fade" id="editModal" tabindex="-1" role="dialog" aria-labelledby="editModalLabel"
+    aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="editModalLabel">Edit</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <form>
+            Inputs for values
+          </form>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+          <button type="button" class="btn btn-primary">Update</button>
+        </div>
+      </div>
     </div>
   </div>
   <script>
-    allTests = document.getElementsByName('test'); 
+    allTests = document.getElementsByName('test');
     allTests.forEach(test => {
       test.addEventListener('click', function () {
         if (document.getElementById('all').checked) {
@@ -84,6 +75,18 @@
       });
     });
   </script>
+  <script>if (typeof module === 'object') { window.module = module; module = undefined; }</script>
+  <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js"
+    integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n"
+    crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"
+    integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo"
+    crossorigin="anonymous"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"
+    integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6"
+    crossorigin="anonymous"></script>
+  <script src="addTest.js"></script>
+  <script>if (window.module) module = window.module;</script>
 </body>
 
 </html>

@@ -1,69 +1,9 @@
 const { ipcRenderer } = require('electron');
 
-// Host for queries
-const url = "http://127.0.0.1:5000";
-// Count to keep test names unique
-let count = 0;
-// To store clicked test element to run
-let clicked = null;
-let initiated = false;
-// To store routes when received by addTestWindow
-let testRoutes = {};
-
-// Create generalized alert element
-const actionAlert = (type, message) => {
-    var div = document.createElement('div');
-    div.className = "alert show fade alert-" + type;
-    div.role = "alert";
-    var text = document.createTextNode(message);
-    div.appendChild(text);
-    return div;
-}
-
 ipcRenderer.on('close-addTestWindow', (e) => {
     replaceAlert("warning", "Cancelled add test")
     setTimeout(closeAlert, 1000);
 });
-const appendInfoAlert = (attr, value, message) => {
-    let find = (attr == 'id' ? "#" : ".") + value;
-    $(find).append(actionAlert("info", message));
-}
-const replaceAlert = (type, message) => {
-    $('.alert').replaceWith(actionAlert(type, message));
-}
-const closeAlert = () => {
-    $('.alert').alert('close');
-}
-
-// Function for XMLHttpRequests
-function http(end) {
-    return new Promise(resolve => {
-        const xhttp = new XMLHttpRequest();
-        xhttp.onreadystatechange = function () {
-            if (this.readyState === 4 && this.status === 200) {
-                resolve(JSON.parse(this.responseText))
-            }
-        };
-        xhttp.open("GET", url + end, true);
-        xhttp.send();
-    });
-}
-
-// Create addTestWindow on create test click
-function callAddWindow() {
-    // Get div #content to alert user
-    appendInfoAlert("id", "test-alerts", "Creating test...");
-
-    // Create data object to send with ipcRenderer to app.js
-    let data = {};
-    // Get url from websiteURL
-    let url = document.getElementById("url").value;
-    data.url = url;
-    console.log(data);
-
-    // Send data to ipcMain for addTestWindow
-    ipcRenderer.send('add-window', data);
-}
 
 // Add test element to mainWindow on add test click from addTestWindow
 ipcRenderer.on('add-test', function (e, data) {
@@ -116,6 +56,67 @@ ipcRenderer.on('add-test', function (e, data) {
     });
     allTests.appendChild(testRow);
 });
+
+// Host for queries
+const url = "http://127.0.0.1:5000";
+// Count to keep test names unique
+let count = 0;
+// To store clicked test element to run
+let clicked = null;
+let initiated = false;
+// To store routes when received by addTestWindow
+let testRoutes = {};
+
+// Create generalized alert element
+const actionAlert = (type, message) => {
+    var div = document.createElement('div');
+    div.className = "alert show fade alert-" + type;
+    div.role = "alert";
+    var text = document.createTextNode(message);
+    div.appendChild(text);
+    return div;
+}
+
+const appendInfoAlert = (attr, value, message) => {
+    let find = (attr == 'id' ? "#" : ".") + value;
+    $(find).append(actionAlert("info", message));
+}
+const replaceAlert = (type, message) => {
+    $('.alert').replaceWith(actionAlert(type, message));
+}
+const closeAlert = () => {
+    $('.alert').alert('close');
+}
+
+// Function for XMLHttpRequests
+function http(end) {
+    return new Promise(resolve => {
+        const xhttp = new XMLHttpRequest();
+        xhttp.onreadystatechange = function () {
+            if (this.readyState === 4 && this.status === 200) {
+                resolve(JSON.parse(this.responseText))
+            }
+        };
+        xhttp.open("GET", url + end, true);
+        xhttp.send();
+    });
+}
+
+// Create addTestWindow on create test click
+function callAddWindow() {
+    // Get div #content to alert user
+    appendInfoAlert("id", "test-alerts", "Creating test...");
+
+    // Create data object to send with ipcRenderer to app.js
+    let data = {};
+    // Get url from websiteURL
+    let url = document.getElementById("url").value;
+    data.url = url;
+    console.log(data);
+
+    // Send data to ipcMain for addTestWindow
+    ipcRenderer.send('add-window', data);
+}
 
 const updateProgress = (width) => {
     $('#progress-bar').css('width', width + '%');

@@ -1,3 +1,4 @@
+/* Main window */
 body{
     background: Gainsboro;
     min-width: 50%;
@@ -43,4 +44,10 @@ body{
 }
 .btn.btn-danger{
     background-color: rgb(206, 74, 22);
+}
+
+/* Add test window */
+#edit-value-modal{
+    padding-top: 0;
+    padding-bottom: 0;
 }
