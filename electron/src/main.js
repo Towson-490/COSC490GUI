@@ -160,9 +160,11 @@ async function callTests() {
                         $("#modal-testing-container").append("<dl id='modal-dl-testing'></dl>");
                         $("#modal-dl-testing").append(`<dt>Test: ${route}</dt><dd>${result.status}</dd>`);
                         if(result.status === "success"){
+                            $("#modal-dl-testing").append(`<dt>Description:</dt><dd>${result.desc}</dd>`);
                             $("#modal-dl-testing").append(`<dt>Data Found:</dt><dd>${result.data}</dd>`);
                             $("#modal-dl-testing").append(`<dt>Pass/Fail:</dt><dd>${result.result}</dd>`);
-                            $("#modal-dl-testing").append(`<dt>Description:</dt><dd>${result.desc}</dd>`);
+                        }else {
+                            $("#modal-dl-testing").append(`<dt>Description:</dt><dd>Error occurred</dd>`);
                         }
                         $("#modal-dl-testing").append("<hr>");
                         updateProgress(currentProgress += percentChange);

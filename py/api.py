@@ -1,4 +1,4 @@
-import sys
+import sys, math
 from flask import Flask, request
 from time import sleep, time
 
@@ -152,21 +152,20 @@ def get_avg_response():
 
     backend_avg = sum(backend_performance) / len(backend_performance)
     frontend_avg = sum(frontend_performance) / len(frontend_performance)
+    total = math.ceil(backend_avg+frontend_avg)
 
-    backend_accept = 5000 
-    frontend_accept = 5000
-
-    backend_result ="backend: " + "Pass" if backend_avg < acceptable_back else "Fail"
-    frontend_result ="frontend: " + "Pass" if frontend_avg < acceptable_front else "Fail"
-    total = "total: " + "Pass" if backend_avg+frontend_avg < acceptable else "Fail"
+    backend_result ="backend: " + "Pass" if backend_avg < float(acceptable_back) else "Fail"
+    frontend_result ="frontend: " + "Pass" if frontend_avg < float(acceptable_front) else "Fail"
+    total_result = "total: " + "Pass" if total < float(acceptable) else "Fail"
 
     backend_avg = str("backend: %dms" % backend_avg)
     frontend_avg = str("frontend: %dms" % frontend_avg)
+    total = str("total: %dms" % total)
 
-    desc = "Acceptable average"
+    desc = "Acceptable averages"
 
     return {"data": "{0}, {1}, {2}".format(backend_avg, frontend_avg, total), 
-            "result": "{0}, {1}, {3}".format(backend_result, frontend_result, total), 
+            "result": "{0}, {1}, {2}".format(backend_result, frontend_result, total_result), 
             "desc": desc, 
             "status": "success"}
 

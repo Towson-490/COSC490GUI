@@ -58,8 +58,8 @@ let tests = [
 
 function getEntries(o) {
   if (o) {
-    return `<footer class="blockquote-footer">Defaults: 
-      ${Object.entries(o).map(e => { return `[${e[0]}: ${e[1]}]` })}
+    return `<footer class="blockquote-footer">Defaults:
+      ${Object.entries(o).map(e => { return ` [${e[0]}: ${e[1]}]` })}
     </footer>`
   }
 }
