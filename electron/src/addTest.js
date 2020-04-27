@@ -92,11 +92,13 @@ function getCheckedBoxes(e) {
       ipcRenderer.send('add-test', data);
     } else {
       console.log("Please select test(s)")
+      $("#add-group-alerts").append(actionAlert("add-group-alert", "danger", "Must select test(s)"));
+      closeAlert("add-group-alert", 1000);
     }
   } else {
-    console.log("Please label group")
+    $("#add-group-alerts").append(actionAlert("add-group-alert", "danger", "Must enter group label"));
+    closeAlert("add-group-alert", 1000);
   }
-
 }
 
 $("#all").on('click', () => {

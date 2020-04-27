@@ -1,112 +1,19 @@
 const { ipcRenderer } = require('electron');
 
-ipcRenderer.on('close-addTestWindow', (e) => {
-    replaceAlert("warning", "Cancelled add test")
-    setTimeout(closeAlert, 1000);
-});
-
-// Add test element to mainWindow on add test click from addTestWindow
-ipcRenderer.on('add-test', function (e, data) {
-    replaceAlert("success", "Added test");
-    setTimeout(closeAlert, 1000);
-    // Get tests div to append test
-    let allTests = document.getElementById('tests');
-
-    // Create div for test 
-    let n = ++count
-    let label = data.label;
-    const testRow = document.createElement('tr');
-    testRow.id = `${label}-${n}`;
-    testRow.className = "testChoice";
-
-    const rowHead = document.createElement('th');
-    rowHead.scope = "row";
-    rowHead.appendChild(document.createTextNode(n));
-    testRow.appendChild(rowHead);
-
-    let rowData = document.createElement('td');
-    rowData.appendChild(document.createTextNode(label))
-    testRow.appendChild(rowData);
-
-    rowData = document.createElement('td');
-
-    // Add list to testRoutes object for test
-    testRoutes[testRow.id] = data.boxes;
-
-    // Get tests and add to test row
-    // Add routes to testRoutes to cell for test
-    for (let box in data.boxes) {
-        rowData.appendChild(document.createTextNode(box));
-        rowData.appendChild(document.createElement("br"));
-        //testRoutes[label].push(data.boxes[box]);
-    }
-    testRow.appendChild(rowData);
-
-    // Select and assign/reassign clicked test
-    testRow.addEventListener('click', function () {
-        if (testRow.className === "testChoice") {
-            if (clicked) {
-                clicked.className = "testChoice";
-            }
-            testRow.className = "table-primary clicked";
-            clicked = testRow;
-        } else {
-            testRow.className = "testChoice";
-        }
-    });
-    allTests.appendChild(testRow);
-});
-
 // Host for queries
 const url = "http://127.0.0.1:5000";
 // Count to keep test names unique
 let count = 0;
 // To store clicked test element to run
-let clicked = null;
+let selectedTest = null;
 let initiated = false;
 // To store routes when received by addTestWindow
 let testRoutes = {};
 
-// Create generalized alert element
-const actionAlert = (type, message) => {
-    var div = document.createElement('div');
-    div.className = "alert show fade alert-" + type;
-    div.role = "alert";
-    var text = document.createTextNode(message);
-    div.appendChild(text);
-    return div;
-};
-
-const appendInfoAlert = (attr, value, message) => {
-    let find = (attr == 'id' ? "#" : ".") + value;
-    $(find).append(actionAlert("info", message));
-};
-
-const replaceAlert = (type, message) => {
-    $('.alert').replaceWith(actionAlert(type, message));
-};
-const closeAlert = () => {
-    $('.alert').alert('close');
-};
-
-// Function for XMLHttpRequests
-function http(end) {
-    return new Promise(resolve => {
-        const xhttp = new XMLHttpRequest();
-        xhttp.onreadystatechange = function () {
-            if (this.readyState === 4 && this.status === 200) {
-                resolve(JSON.parse(this.responseText))
-            }
-        };
-        xhttp.open("GET", url + end, true);
-        xhttp.send();
-    });
-}
-
 // Create addTestWindow on create test click
 function callAddWindow() {
     // Get div #content to alert user
-    appendInfoAlert("id", "test-alerts", "Creating test...");
+    $("#test-alerts").append(actionAlert("new-group-alert", "info", "Creating test group..."));
 
     // Create data object to send with ipcRenderer to app.js
     let data = {};
@@ -119,6 +26,79 @@ function callAddWindow() {
     ipcRenderer.send('add-window', data);
 }
 
+ipcRenderer.on('close-addTestWindow', (e) => {
+    replaceAlert("new-group-alert", "warning", "Cancelled add test");
+    closeAlert("new-group-alert", 1000);
+});
+
+// Add test element to mainWindow on add test click from addTestWindow
+ipcRenderer.on('add-test', function (e, data) {
+    // Get tests div to append test
+    let allTests = document.getElementById('tests');
+
+    // Create table row for test 
+    let n = ++count
+    let label = data.label;
+    const testRow = document.createElement('tr');
+    testRow.id = `${label}-${n}`;
+    testRow.className = "testChoice";
+
+    // Add n as row head
+    const rowHead = document.createElement('th');
+    rowHead.scope = "row";
+    rowHead.appendChild(document.createTextNode(n));
+    testRow.appendChild(rowHead);
+
+    // Add label to row
+    let rowData = document.createElement('td');
+    rowData.appendChild(document.createTextNode(label))
+    testRow.appendChild(rowData);
+
+    // Add Tests to row
+    rowData = document.createElement('td');
+    // Add test list to testRoutes object for test
+    testRoutes[testRow.id] = data.boxes;
+    // Get tests and add to test row
+    // Add routes to testRoutes to cell for test
+    for (let box in data.boxes) {
+        rowData.appendChild(document.createTextNode(box));
+        rowData.appendChild(document.createElement("br"));
+        //testRoutes[label].push(data.boxes[box]);
+    }
+    testRow.appendChild(rowData);
+
+    // Select and assign/reassign clicked test
+    testRow.addEventListener('click', function () {
+        if (testRow.className === "testChoice") {
+            if (selectedTest) {
+                selectedTest.className = "testChoice";
+            }
+            testRow.className = "table-primary clicked";
+            selectedTest = testRow;
+        } else {
+            testRow.className = "testChoice";
+        }
+    });
+    allTests.appendChild(testRow);
+
+    // Add actions to row
+    $(`<td><a id="delete-${label}-${n}" href="#" class="badge badge-danger"><svg class="bi bi-trash" width="1em" height="1em" viewBox="0 0 16 16" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+    <path d="M5.5 5.5A.5.5 0 016 6v6a.5.5 0 01-1 0V6a.5.5 0 01.5-.5zm2.5 0a.5.5 0 01.5.5v6a.5.5 0 01-1 0V6a.5.5 0 01.5-.5zm3 .5a.5.5 0 00-1 0v6a.5.5 0 001 0V6z"/>
+    <path fill-rule="evenodd" d="M14.5 3a1 1 0 01-1 1H13v9a2 2 0 01-2 2H5a2 2 0 01-2-2V4h-.5a1 1 0 01-1-1V2a1 1 0 011-1H6a1 1 0 011-1h2a1 1 0 011 1h3.5a1 1 0 011 1v1zM4.118 4L4 4.059V13a1 1 0 001 1h6a1 1 0 001-1V4.059L11.882 4H4.118zM2.5 3V2h11v1h-11z" clip-rule="evenodd"/>
+    </svg> Remove</a>
+    </td>`).appendTo(`#${label}-${n}`);
+    $(`#delete-${label}-${n}`).on("click", (e)=> {
+        e.stopPropagation();
+        $(`#${label}-${n}`).remove();
+        if($("#tests").children().length == 0){
+            count = 0;
+        }
+    })
+
+    replaceAlert("new-group-alert", "success", "Added test");
+    closeAlert("new-group-alert", 1000);
+});
+
 const updateProgress = (width) => {
     $('#progress-bar').css('width', width + '%');
     $('#progress-bar').text(width + "%");
@@ -126,20 +106,21 @@ const updateProgress = (width) => {
 
 // Make queries on start click
 async function callTests() {
-    if (clicked) {
-        $("#modal-btn").prop("hidden", true);
+    if (selectedTest) {
+        $("#modal-btn").prop("disabled", true);
         $(".modal-body").empty();
-        $('.modal-title').text("Test Results: " + clicked.id);
+        $('.modal-title').text("Test Results: " + selectedTest.id);
         let result = "";
         let currentProgress = 0;
 
         if (!initiated) {
+            initiated = true;
             $(".modal-body").append(`<h5>Setup</h5><hr>`);
             $(".modal-body").append("<dl id='modal-dl-setup'></dl>");
             $("#modal-dl-setup").append(`<dt>Headless Mode:</dt><dd>${$("#headless").prop("checked")}</dd>`);
 
             // Initialize driver
-            appendInfoAlert("id", "log-alerts", "Initializing Driver...");
+            $("#log-alerts").append(actionAlert("log-alert", "info", "Initializing Driver..."));
             let init = "/init"
             if (document.getElementById("headless").checked) {
                 init += "?headless=True"
@@ -150,30 +131,29 @@ async function callTests() {
 
             // Set initiated to true to not double run tests
             if (result.status === "success") {
-                replaceAlert("success", "Driver initialized");
+                replaceAlert("log-alert", "success", "Driver initialized");
                 updateProgress(currentProgress += 5);
 
-                initiated = true;
                 let get = "/get";
                 let url = document.getElementById("url").value
 
                 get += "?url=" + url
-                replaceAlert("info", `Contacting Website: ${url}...`);
+                replaceAlert("log-alert", "info", `Contacting Website: ${url}...`);
                 result = await http(get);
 
                 $("#modal-dl-setup").append(`<dt>Contacting Website:</dt><dd>${result.status}</dd>`);
                 if (result.status === "success") {
-                    replaceAlert("success", "Website contacted: " + url + "...");
+                    replaceAlert("log-alert", "success", "Website contacted: " + url + "...");
                     updateProgress(currentProgress += 5);
 
                     // Get and run routes from testRoutes object based on test id
-                    let routes = testRoutes[clicked.id];
+                    let routes = testRoutes[selectedTest.id];
                     console.log(routes);
                     let percentChange = 90 / Object.keys(routes).length;
 
                     $(".modal-body").append(`<h5>Testing</h5><hr>`);
                     for (const route in routes) {
-                        replaceAlert("info", "Running Test For " + route);
+                        replaceAlert("log-alert", "info", "Running Test For " + route);
                         result = await http('/' + routes[route]);
 
                         $(".modal-body").append("<div id='modal-testing-container' class='container'></div>")
@@ -188,7 +168,7 @@ async function callTests() {
                         updateProgress(currentProgress += percentChange);
                     }
                     // Terminate Driver
-                    replaceAlert("info", "Stopping Driver...");
+                    replaceAlert("log-alert", "info", "Stopping Driver...");
 
                     $(".modal-body").append(`<h5>Teardown</h5><hr>`);
                     $(".modal-body").append("<dl id='modal-dl-teardown'></dl>");
@@ -199,27 +179,29 @@ async function callTests() {
                     if(result.status === "success"){
                         initiated = false;
 
-                        replaceAlert("success", "Driver stopped");
-                        replaceAlert("success", "Testing Finished & Processes Stopped");
-                        setTimeout(closeAlert, 1000);
+                        replaceAlert("log-alert", "success", "Driver stopped");
+                        replaceAlert("log-alert", "success", "Testing Finished & Processes Stopped");
                         updateProgress(0);
                     }else{
-                        replaceAlert("danger", "Driver failed to stop");
+                        replaceAlert("log-alert", "warning", "Driver did not stop right away");
                     }
                 } else {
-                    replaceAlert("danger", "Failed to contact Website");
+                    replaceAlert("log-alert", "danger", "Failed to contact Website");
                 }
             } else {
-                replaceAlert("danger", "Failed to initiate driver");
+                replaceAlert("log-alert", "danger", "Failed to initiate driver");
             }
         } else {
-            console.log("driver already initiated");
-            replaceAlert("danger", "Driver already initiated");
+            $("#test-alerts").append(actionAlert("new-group-alert", "warning", "Test Group Running..."));
+            closeAlert("new-group-alert", 1000);
         }
-        $("#modal-btn").prop("hidden", false);
+        if(!initiated){
+            closeAlert("log-alert", 1000);
+            $("#modal-btn").prop("disabled", false);
+        }
     } else {
         $('.modal-title').text("No test chosen");
-        $('.modal-body').text("Choose test from list to start");
+        $('.modal-body').text("Select group from the list to run");
         $("#modal-save").prop("hidden", true);
         $('#modal').modal();
     }
@@ -235,4 +217,18 @@ function stopTests() {
     http('/quit');
     initiated = false;
     updateProgress(0);
+}
+
+// Function for XMLHttpRequests
+function http(end) {
+    return new Promise(resolve => {
+        const xhttp = new XMLHttpRequest();
+        xhttp.onreadystatechange = function () {
+            if (this.readyState === 4 && this.status === 200) {
+                resolve(JSON.parse(this.responseText))
+            }
+        };
+        xhttp.open("GET", url + end, true);
+        xhttp.send();
+    });
 }
