@@ -5,7 +5,7 @@ from selenium.webdriver.common.action_chains import ActionChains
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
-import platform, os
+import platform, os, re, types
 from time import sleep, time
 
 from bs4 import BeautifulSoup
@@ -27,7 +27,7 @@ import nltk
 """Initialize driver globally: 'global driver' to be used in definitions"""
 driver = None
 
-"""Initialize test site globally. If not supplied defaults to www.towson.edu"""
+"""Initialize test site globally. If not supplied defaults to test_url"""
 test_site = "phptravels.net"
 test_url = "https://www." + test_site
 # Email user@phptravels.com
@@ -88,8 +88,12 @@ def create_driver(headless, capabilities=None, incognito=None):
 """Instruct driver to navigate to url"""
 def get_url(url):
   global driver
-
-  # For testing purposes. Will be replaced by arg in route
+  global test_url
+  global test_site
+  test_url = url
+  
+  test_site = re.search(r"www.(\w+.\w+)\\?", url).group(1)
+ 
   driver.get(url)
   sleep(5)
 
@@ -136,9 +140,9 @@ def get_element_fonts():
 
 
 def get_inner_html():
-  global url
+  global test_url
   words = []
-  html = urllib.request.urlopen("https://www.towson.edu/").read()
+  html = urllib.request.urlopen(test_url).read()
   # puts the text into a file
   tokenizer = nltk.sent_tokenize(str(text_from_html(html)))
   html_file = open("data/html_file.txt", "w+")
@@ -227,12 +231,12 @@ def check_response():
   frontend_performance = []
 
   try:
-    # www.towson.edu for test purposes, will be supplied by domain specified in test
-    hrefs = [ e.get_attribute("href") for e in elements if (test_site if test_site else "towson.edu") in e.get_attribute("href") ]
+    hrefs = [ e.get_attribute("href") for e in elements if (e.get_attribute("href") is not None and test_site in e.get_attribute("href")) ]
   except StaleElementReferenceException as e:
       print(e)
 
   # limit: 3 set for test purposes, limit to be supplied by test args
+
   for href in hrefs[0:3]:
     driver.get(href)
  
@@ -252,7 +256,7 @@ def check_response():
     backend_performance.append(responseStart - navigationStart)
     frontend_performance.append(domComplete - responseStart)
 
-    sleep(10)
+    sleep(5)
     
   return backend_performance, frontend_performance
 

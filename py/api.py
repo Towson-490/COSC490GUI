@@ -145,12 +145,10 @@ https://www.nngroup.com/articles/response-times-3-important-limits/
 @app.route('/get_avg_response', methods=['GET'])
 def get_avg_response():
     acceptable = request.args.get("acceptable", default=10000)
-    acceptable_back = request.args.get("back", default= 5000)
-    acceptable_front = request.args.get("front", default= 5000)
+    acceptable_back = request.args.get("backend", default= 5000)
+    acceptable_front = request.args.get("frontend", default= 5000)
 
     backend_performance, frontend_performance = webHelper.check_response()
-
-    print(backend_performance, frontend_performance)
 
     backend_avg = sum(backend_performance) / len(backend_performance)
     frontend_avg = sum(frontend_performance) / len(frontend_performance)
@@ -158,15 +156,19 @@ def get_avg_response():
     backend_accept = 5000 
     frontend_accept = 5000
 
-    backend_result ="backend: " + "Pass" if backend_avg < backend_accept else "Fail"
-    frontend_result ="frontend: " + "Pass" if frontend_avg < frontend_accept else "Fail"
+    backend_result ="backend: " + "Pass" if backend_avg < acceptable_back else "Fail"
+    frontend_result ="frontend: " + "Pass" if frontend_avg < acceptable_front else "Fail"
+    total = "total: " + "Pass" if backend_avg+frontend_avg < acceptable else "Fail"
 
     backend_avg = str("backend: %dms" % backend_avg)
     frontend_avg = str("frontend: %dms" % frontend_avg)
 
     desc = "Acceptable average"
 
-    return {"data": [backend_avg, frontend_avg], "result": [backend_result, frontend_result], "desc": desc, "status": "success"}
+    return {"data": "{0}, {1}, {2}".format(backend_avg, frontend_avg, total), 
+            "result": "{0}, {1}, {3}".format(backend_result, frontend_result, total), 
+            "desc": desc, 
+            "status": "success"}
 
 
 """Route to test webhelper definitions""" 

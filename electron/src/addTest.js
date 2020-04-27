@@ -43,6 +43,17 @@ let tests = [
     "routeSlug": "get_nogo_colors/background",
     "desc": "Test colors to avoid"
   },
+  {
+    "routeDesc": "Get average response times",
+    "routeSlug": "get_avg_response",
+    "desc": "Test time (ms) between domain links",
+    "values": {
+      "acceptable": 10000,
+      "backend": 5000,
+      "frontend": 5000
+    },
+  },
+  
 ];
 
 function getEntries(o) {
@@ -67,8 +78,15 @@ $(window).on("load", () => {
     ${(addParams ? getEntries(test["values"]) : "")}
   </blockquote>
   `);
-    if (addParams) {
-      $(`#${test["routeSlug"]}`).attr("value", test["routeSlug"] + "?updates=true" + Object.entries(addParams).map(e => { return `&${e[0]}=${e[1]}` }));
+    if (addParams) {    
+      let $routeSlug = $(`#${test["routeSlug"]}`) 
+      $routeSlug.val($routeSlug.val()+"?values=true")
+      Object.entries(addParams).forEach(([key, value]) => { 
+        console.log(`&${key}=${value}`)
+        $routeSlug.val((i, val) => {
+          return val + `&${key}=${value}`
+        }) 
+      })
     }
   }
 });
@@ -80,11 +98,11 @@ function getCheckedBoxes(e) {
   let label = $("#test-label").prop("value").trim();
   if (label != "") {
     data.label = label;
-    let checkedBoxes1 = $(".test:checked")
+    let checkedBoxes = $(".test:checked")
 
-    if (checkedBoxes1.length != 0) {
+    if (checkedBoxes.length != 0) {
       let boxes = {}
-      for (box of checkedBoxes1){
+      for (box of checkedBoxes){
         boxes[box.nextElementSibling.innerText] = box.value;
       }
       data.boxes = boxes;
