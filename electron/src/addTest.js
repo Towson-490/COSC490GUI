@@ -76,36 +76,31 @@ $(window).on("load", () => {
 // Handle submit button
 function getCheckedBoxes(e) {
   e.preventDefault();
-  let label = document.getElementById('test-label');
-  let checkboxes = document.getElementsByName('test');
-  let checkedBoxes = {};
-  let uncheckedBoxes = {};
+  const data = {};
+  let label = $("#test-label").prop("value").trim();
+  if (label != "") {
+    data.label = label;
+    let checkedBoxes1 = $(".test:checked")
 
-  // Add checked boxes to array to send to main process
-  checkboxes.forEach(box => {
-    if (box.checked) {
-      checkedBoxes[box.nextElementSibling.innerText] = box.value;
+    if (checkedBoxes1.length != 0) {
+      let boxes = {}
+      for (box of checkedBoxes1){
+        boxes[box.nextElementSibling.innerText] = box.value;
+      }
+      data.boxes = boxes;
+      console.log(data);
+      ipcRenderer.send('add-test', data);
+    } else {
+      console.log("Please select test(s)")
+      $("#add-group-alerts").append(actionAlert("add-group-alert", "danger", "Must select test(s)"));
+      closeAlert("add-group-alert", 1000);
     }
-    else {
-      uncheckedBoxes[box.nextElementSibling.innerText] = box.value;
-    }
-  });
-
-  let data = {
-    'label': label.value,
-    'boxes': Object.keys(checkedBoxes).length == 0 ? uncheckedBoxes : checkedBoxes
-  };
-  console.log(data);
-  ipcRenderer.send('add-test', data);
-}
-
-// Uncheck all other boxes if all tests is checked
-function allChecked() {
-  let allCheckbox = document.getElementById('all');
-  if (allCheckbox.checked) {
-    allTests = document.getElementsByName('test');
-    allTests.forEach(test => {
-      test.checked = false;
-    });
+  } else {
+    $("#add-group-alerts").append(actionAlert("add-group-alert", "danger", "Must enter group label"));
+    closeAlert("add-group-alert", 1000);
   }
 }
+
+$("#all").on('click', () => {
+  $(".test").prop("checked", $("#all").prop("checked")); ``
+});

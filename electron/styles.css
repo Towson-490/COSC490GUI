@@ -12,9 +12,13 @@ body{
 #createTest{
     margin-bottom: 1vh;
 }
-#footer,
+#body-footer,
 #footer-btns{
     margin-bottom: 1vh;
+}
+.btn.col{
+    margin-right: 1vw;
+    margin-left: 1vw;
 }
 .alert-container{
     min-height: 9vh;
