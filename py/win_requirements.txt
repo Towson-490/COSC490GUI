@@ -1,4 +1,6 @@
 altgraph==0.17
+beautifulsoup4==4.9.0
+bs4==0.0.1
 cffi==1.14.0
 Click==7.0
 Flask==1.1.1
@@ -9,8 +11,10 @@ gevent==1.4.0
 greenlet==0.4.15
 itsdangerous==1.1.0
 Jinja2==2.11.1
+joblib==0.14.1
 MarkupSafe==1.1.1
 msgpack==1.0.0
+nltk==3.5
 pefile==2019.4.18
 pycparser==2.20
 PyInstaller==3.6
@@ -18,9 +22,10 @@ pypiwin32==223
 pywin32==227
 pywin32-ctypes==0.2.0
 pyzmq==19.0.0
-selenium
+regex==2020.4.4
+selenium==3.141.0
 six==1.14.0
+soupsieve==2.0
+tqdm==4.45.0
 urllib3==1.25.8
 Werkzeug==1.0.0
-bs4
-nltk
