@@ -1,12 +1,9 @@
 
 # COSC490GUI
-This research project focuses on how to automate usability testing and the challenges that surround this. It's a cross-platform, web scraping tool that will test if any given website is usable and provide feedback for improvements. This tool is to help agile development teams better integrate usability testing.
-
 ## Overview
-This was created by 6 Towson University students for their software practicum class. The students are Kristen Thesing, Jose De La Rosa, Heiu Dinh, Daniel Thompson, James Lohr and Kyara Pugh. They worked with MITRE usabilty testers and engineers to create a deliverable software product for the InSure Spring 2020 project. 
+This research project focuses on how to automate usability testing and the challenges that surround this. It's a cross-platform, web scraping tool that will test if any given website is usable and provide feedback for improvements. This tool is to help agile development teams better integrate usability testing. It was created by 6 Towson University students for their software practicum class. The students are Kristen Thesing, Jose De La Rosa, Heiu Dinh, Daniel Thompson, James Lohr and Kyara Pugh. They worked with MITRE usabilty testers and engineers to create a deliverable software product for the InSure Spring 2020 project. 
 
 ## Getting Started
-
 ### Requirements  
 - Node.js, to install packages required by our front-end GUI, powered by Electron
 - Python3, used for packages, to write our tests and control Selenium WebDriver
@@ -50,7 +47,7 @@ As indicated in the [setup](https://sites.google.com/a/chromium.org/chromedriver
    * Install packages for your Operating system
       * (Win) `pip3 install -r win_requirements.txt`
       * (Mac) `pip3 install -r osx_requirements.txt`
-      * *To be provided (Linux) `pip3 install -r lin_requirements.txt`*
+      * (Linux) `pip3 install -r lin_requirements.txt`
 3. To run: 
     Flask server:
     * In py/ directory: 
