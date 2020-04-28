@@ -1,6 +1,6 @@
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
-from selenium.common.exceptions import StaleElementReferenceException, TimeoutException
+from selenium.common.exceptions import StaleElementReferenceException, TimeoutException, NoSuchElementException
 from selenium.webdriver.common.action_chains import ActionChains
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
@@ -98,7 +98,18 @@ def get_url(url):
   driver.get(url)
   sleep(5)
 
-  return "url contacted"
+  error = None
+  try:
+    error = driver.find_element_by_class_name('error-code')
+  except NoSuchElementException as e:
+    print(e)
+  
+  if error:
+    "error", driver.execute_script("return arguments[0].innerText;", error)+": Please make sure the URL is correct"
+  elif driver.title is None or "400 Bad Request" in driver.title:
+    return "error", "Bad Request: Please make sure the URL is correct"
+  else:
+    return "success", "website contacted"
 
 
 # Close instance of driver  
@@ -144,7 +155,6 @@ def get_element_fonts():
 def get_inner_html():
   global test_url
   words = []
-  print(test_url)
   html = urllib.request.urlopen(test_url).read()
   # puts the text into a file
   tokenizer = nltk.sent_tokenize(str(text_from_html(html)))
@@ -157,10 +167,7 @@ def get_inner_html():
       for lst in bad_words_list:
           if lst.casefold() in reader.casefold():
               words.append(lst)
-              print("Trigger word found: '" + lst + "' shows up on the website")
               count += 1
-          else:
-              print("false")
 
   return list(set(words))
 

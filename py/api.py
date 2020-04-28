@@ -57,10 +57,13 @@ Must be called before other definitions
 @app.route('/get', methods=['GET'])
 def get_url():
     url = request.args.get("url", default="https://www.phptravels.net")
-    webHelper.get_url(url)
+    
+    status, message = webHelper.get_url(url)
 
-    return {"data": "webpage contacted", "status": "success"}
-
+    if status == "success":
+        return {"data": message, "status": status}
+    else:
+        abort(404, message)
 
 """Close instance of driver"""  
 @app.route('/quit', methods=['GET'])

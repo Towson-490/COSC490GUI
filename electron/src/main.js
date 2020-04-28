@@ -166,6 +166,7 @@ async function callTests() {
                             $("#modal-dl-testing").append(`<dt>Code:</dt><dd>${result.code}</dd>`);
                             $("#modal-dl-testing").append(`<dt>Name:</dt><dd>${result.name}</dd>`);
                             $("#modal-dl-testing").append(`<dt>Description:</dt><dd>${result.description}</dd>`);
+                            break;
                         }
                         $("#modal-dl-testing").append("<hr>");
                         updateProgress(currentProgress += percentChange);
@@ -195,6 +196,7 @@ async function callTests() {
                 replaceAlert("log-alert", "danger", "Failed to initiate driver");
             }
             if(result.status === "error"){
+                stopTests()
                 initiated = false;
                 $(".modal-body").append(`<h5>Error</h5><hr>`);
                 $(".modal-body").append("<dl id='modal-dl-error'></dl>");
