@@ -27,6 +27,12 @@ https://sites.google.com/a/chromium.org/chromedriver/downloads
 
 As indicated in the [setup](https://sites.google.com/a/chromium.org/chromedriver/getting-started) instructions, you can:
 1. Include the ChromeDriver location in your PATH environment variable.
+  * (Linux) In terminal: 
+    ```
+    sudo mv chromedriver /usr/bin/chromedriver
+    sudo chown root:root /usr/bin/chromedriver
+    sudo chmod +x /usr/bin/chromedriver
+    ```
 2. Provide the path to ChromeDriver when instantiating webdriver.Chrome().
    * *in py/api.py*
 3. *To Be Implemented: provide path to GUI*
@@ -36,22 +42,31 @@ As indicated in the [setup](https://sites.google.com/a/chromium.org/chromedriver
 1. To install the required front-end dependencies:  
    * Open a terminal.
    * CD into the electron/ directory.
-   * Enter the command *npm install*
+   * Enter the command `npm install`
 2. To install the required back-end packages:   
    * Open a terminal.
    * CD into the py/ directory.
    * (Recommended) Start or Create and Start a python virtual environment.
    * Install packages for your Operating system
-      * (Win) pip3 install -r win_requirements.txt
-      * (Mac) pip3 install -r osx_requirements.txt
-      * *To be provided (Linux) pip3 install -r lin_requirements.txt*
+      * (Win) `pip3 install -r win_requirements.txt`
+      * (Mac) `pip3 install -r osx_requirements.txt`
+      * *To be provided (Linux) `pip3 install -r lin_requirements.txt`*
 3. To run: 
     Flask server:
     * In py/ directory: 
-      Enter command *py api.py* 
+      Enter command `py api.py` or `python3 api.py`
     Electron GUI:
     * In eletron/ directory: 
-      Enter command *npm start*
+      Enter command `npm start`
+   
+### Troubleshooting
+* If errors occur with nltk when running Check page text, you may need to install nltk data  
+  * In py/ directory:
+    ```
+    python3
+    import nltk
+    nltk.download('punkt')
+    ```
     
 ## References
 
