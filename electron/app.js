@@ -5,17 +5,6 @@ const { app, BrowserWindow, Menu, ipcMain } = require('electron');
 const path = require('path');
 const url = require('url');
 
-/**Resource path:: Uncomment after testing  */
-//var pathF = path.resolve(process.resourcesPath, './py/dist/api/api.exe'); //<---Executable python server path
-
-/**Testing path:: Comment out after testing */
-//var pathF = path.resolve('./py/dist/api/api.exe');
-
-var subproc = null;
-
-//app urlloc
-//var appurl = 'http://localhost:5000/';
-
 let mainWindow;
 let addTestWindow;
 
@@ -32,7 +21,7 @@ app.on('ready', function () {
 });
 
 app.on('window-all-closed', () => {
-    if (process.platform !== "darwin") {
+    if (process.platform != "darwin") {
         app.quit();
     }
 });
@@ -65,12 +54,6 @@ function createMainWindow() {
     // Quit app when closed
     mainWindow.on('closed', () => {
         mainWindow = null;
-
-        // Close the open server
-        if (subproc != null) {
-            subproc.kill('SIGINT');
-        }
-
         app.quit();
     });
 }
@@ -142,7 +125,7 @@ const mainMenuTemplate = [
             },
             {
                 label: 'Quit',
-                accelerator: process.platform == 'darwin' ? 'Command+Q' : 'Ctrl+Q',
+                accelerator: process.platform === 'darwin' ? 'Command+Q' : 'Ctrl+Q',
                 click() {
                     app.quit();
                 }
@@ -152,7 +135,7 @@ const mainMenuTemplate = [
 ];
 
 // If mac, add empty object to menu
-if (process.platform == 'darwin') {
+if (process.platform === 'darwin') {
     // array method adds to beginning to array
     mainMenuTemplate.unshift({label: ''});
 }
@@ -164,7 +147,7 @@ if (process.env.NODE_ENV != 'production') {
         submenu: [
             {
                 label: 'Toggle DevTools',
-                accelerator: process.platform == 'darwin' ? 'Command+I' : 'Ctrl+I',
+                accelerator: process.platform === 'darwin' ? 'Command+I' : 'Ctrl+I',
                 click(item, focusedWindow) {
                     focusedWindow.toggleDevTools();
                 }
@@ -175,15 +158,3 @@ if (process.env.NODE_ENV != 'production') {
         ]
     });
 }
-
-// function prom() {
-//     //wait until the url started
-//     subproc = require('child_process').exec(pathF)
-//     if(subproc!= null){
-//         console.log("server success")
-//         createWindow();
-//     }else{
-//         console.log("fail")
-//     }
-
-// }
