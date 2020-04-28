@@ -125,9 +125,8 @@ async function callTests() {
             if (document.getElementById("headless").checked) {
                 init += "?headless=True"
             }
-
             result = await http(init);
-            $("#modal-dl-setup").append(`<dt>Initialize Driver:</dt><dd>${result.status}</p></dd>`);
+            $("#modal-dl-setup").append(`<dt>Initialize Driver:</dt><dd>${result.status}</dd></dt>`);
 
             // Set initiated to true to not double run tests
             if (result.status === "success") {
@@ -164,7 +163,9 @@ async function callTests() {
                             $("#modal-dl-testing").append(`<dt>Data Found:</dt><dd>${result.data}</dd>`);
                             $("#modal-dl-testing").append(`<dt>Pass/Fail:</dt><dd>${result.result}</dd>`);
                         }else {
-                            $("#modal-dl-testing").append(`<dt>Description:</dt><dd>Error occurred</dd>`);
+                            $("#modal-dl-testing").append(`<dt>Code:</dt><dd>${result.code}</dd>`);
+                            $("#modal-dl-testing").append(`<dt>Name:</dt><dd>${result.name}</dd>`);
+                            $("#modal-dl-testing").append(`<dt>Description:</dt><dd>${result.description}</dd>`);
                         }
                         $("#modal-dl-testing").append("<hr>");
                         updateProgress(currentProgress += percentChange);
@@ -193,6 +194,14 @@ async function callTests() {
             } else {
                 replaceAlert("log-alert", "danger", "Failed to initiate driver");
             }
+            if(result.status === "error"){
+                initiated = false;
+                $(".modal-body").append(`<h5>Error</h5><hr>`);
+                $(".modal-body").append("<dl id='modal-dl-error'></dl>");
+                $("#modal-dl-error").append(`<dt>Code:</dt><dd>${result.code}</dd>`);
+                $("#modal-dl-error").append(`<dt>Name:</dt><dd>${result.name}</dd>`);
+                $("#modal-dl-error").append(`<dt>Description:</dt><dd>${result.description}</dd>`);
+            }
         } else {
             $("#test-alerts").append(actionAlert("new-group-alert", "warning", "Test Group Running..."));
             closeAlert("new-group-alert", 1000);
@@ -200,7 +209,7 @@ async function callTests() {
         if(!initiated){
             closeAlert("log-alert", 1000);
             $("#modal-btn").prop("disabled", false);
-        }
+        }        
     } else {
         $('.modal-title').text("No test chosen");
         $('.modal-body').text("Select group from the list to run");
@@ -218,6 +227,9 @@ function clearTests() {
 function stopTests() {
     http('/quit');
     initiated = false;
+    $(".alert").alert("close")
+    $("#test-alerts").append(actionAlert("stop-test-alert", "danger", "Testing stopped"));
+    closeAlert("stop-test-alert", 1000);
     updateProgress(0);
 }
 

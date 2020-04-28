@@ -1,5 +1,6 @@
 import sys, math
-from flask import Flask, request
+import urllib.error
+from flask import Flask, request, abort, jsonify
 from time import sleep, time
 
 from helpers import webHelper
@@ -14,6 +15,26 @@ from helpers import webHelper
 
 app = Flask(__name__)
 
+@app.errorhandler(Exception)
+def handle_invalid_usage(e):
+    if isinstance(e, urllib.error.URLError):
+        print(isinstance(e, urllib.error.URLError))
+        sleep(10)
+        response = {
+            "status": "error",
+            "code": "None",
+            "name": "urllib.error.URLError",
+            "description": "Url not found. Please make sure it is typed correctly",
+        }
+    else:
+        response =  {
+            "status": "error",
+            "code": e.code,
+            "name": e.name,
+            "description": e.description,
+        }
+    return response
+
 @app.route('/')
 def hello_world():
     return ('Hello, World!')
@@ -23,10 +44,11 @@ def hello_world():
 @app.route('/init', methods=['GET'])
 def initiate_driver():
     headless = request.args.get("headless", default=False) # set to False default
+
     driver = webHelper.initialize_driver(headless=(True if headless=="True" else False))
 
-    return {"data": "initiated", "status": "success"}
-
+    return {"data": "initialized", "status": "success"}
+    
 
 """
 Instruct driver to navigate to url
@@ -132,7 +154,7 @@ def get_nogo_text():
     if len(inner_text) > 0:
         return {"data": " ".join(inner_text), "result": "Fail", "desc": "No-go words were found", "status": "success"}
     else:
-        return {"data": "None", "result": "Pass", "desc": "No No-go colors were found", "status": "success"}
+        return {"data": "None", "result": "Pass", "desc": "No No-go words were found", "status": "success"}
 
 
 """

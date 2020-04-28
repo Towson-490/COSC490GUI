@@ -7,6 +7,7 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 import platform, os, re, types
 from time import sleep, time
+from flask import abort
 
 from bs4 import BeautifulSoup
 from bs4.element import Comment
@@ -28,7 +29,7 @@ import nltk
 driver = None
 
 """Initialize test site globally. If not supplied defaults to test_url"""
-test_site = "phptravels.net"
+test_site = "automationpractice.com/index.php"
 test_url = "https://www." + test_site
 # Email user@phptravels.com
 # Password demouser
@@ -38,7 +39,7 @@ def initialize_driver(headless, capabilities=None, incognito=None):
   global driver
   
   driver = create_driver(headless, capabilities, incognito)
-  
+
   return driver
 
 
@@ -105,6 +106,7 @@ def quit_driver():
   global driver
 
   driver.quit()
+  driver = None
 
   return "driver stopped"
 
@@ -142,6 +144,7 @@ def get_element_fonts():
 def get_inner_html():
   global test_url
   words = []
+  print(test_url)
   html = urllib.request.urlopen(test_url).read()
   # puts the text into a file
   tokenizer = nltk.sent_tokenize(str(text_from_html(html)))
