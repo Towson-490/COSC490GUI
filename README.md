@@ -41,7 +41,7 @@ As indicated in the [setup](https://sites.google.com/a/chromium.org/chromedriver
    * Install packages for your Operating system
       * (Win) pip3 install -r win_requirements.txt
       * (Mac) pip3 install -r osx_requirements.txt
-      * *To be provided (Linux) pip3 install -r lin_requirements.txt*
+      * (Linux) pip3 install -r lin_requirements.txt*
 3. To run: 
     Flask server:
     * In py/ directory: 
