@@ -282,8 +282,6 @@ Check system status response for delayed results
 
 https://www.nngroup.com/articles/response-times-3-important-limits/
 **Time from link: between .1-10 seconds
-
-*Works for Towson...
 """
 # Needs route
 def check_system_status(timeout):

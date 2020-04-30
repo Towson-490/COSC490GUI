@@ -1,12 +1,21 @@
 const { ipcRenderer } = require('electron');
+// Load config.json
+const config = require('../config.json')
 
-// Host for queries
-const url = "http://127.0.0.1:5000";
+// Get environment, set as development by default
+const environment = process.env.NODE_ENV || 'development';
+// Set global config based on environment
+const gConfig = config[environment]
+// Set host for queries based on global config
+const url = gConfig.api_host+":"+gConfig.api_port;
+
 // Count to keep test names unique
 let count = 0;
-// To store clicked test element to run
+
+// Store clicked test element to run
 let selectedTest = null;
 let initiated = false;
+
 // To store routes when received by addTestWindow
 let testRoutes = {};
 
@@ -17,9 +26,6 @@ function callAddWindow() {
 
     // Create data object to send with ipcRenderer to app.js
     let data = {};
-    // Get url from websiteURL
-    let url = document.getElementById("url").value;
-    data.url = url;
     console.log(data);
 
     // Send data to ipcMain for addTestWindow

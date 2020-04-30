@@ -49,8 +49,6 @@ function createMainWindow() {
         slashes: true,
     }));
 
-    // entry.loadURL(appurl);
-
     // Quit app when closed
     mainWindow.on('closed', () => {
         mainWindow = null;

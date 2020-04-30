@@ -1,0 +1,21 @@
+{
+  "development": {
+    "config_id": "development",
+    "app_name": "Automated Usability Testing",
+    "app_desc": "Automate tasks based on usability heuristics",
+    "api_host": "http://127.0.0.1",
+    "api_port": 5000,
+    "json_indentation": 4
+  },
+  "testing": {
+    "config_id": "testing"
+  },
+  "staging": {
+    "config_id": "staging",
+    "api_port": 5000
+  },
+  "production": {
+    "config_id": "production",
+    "api_port": 5000
+  }
+}
