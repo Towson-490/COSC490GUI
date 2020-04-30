@@ -142,14 +142,16 @@ def save_source(address, source):
 def get_element_fonts():
   global driver
   elements = driver.find_elements_by_css_selector("*")
+  font_tags = driver.find_elements_by_tag_name("font")
   fonts = []
 
   try:
     [ fonts.extend(map(str.strip, e.value_of_css_property("font-family").split(","))) for e in elements ]
+    fonts.extend([e.get_attribute("face") for e in font_tags])
   except StaleElementReferenceException as e:
       print(e)
 
-  return list(set(fonts))
+  return list(set([font.lower().replace('"', '').replace("'", '') for font in fonts if font]))
 
 
 def get_inner_html():
@@ -190,9 +192,11 @@ def text_from_html(body):
 def get_text_colors():
   global driver
   elements = driver.find_elements_by_css_selector("*")
+  font_tags = driver.find_elements_by_tag_name("font")
 
   try:
     text_colors = [ e.value_of_css_property("color") for e in elements ]
+    text_colors.extend([e.get_attribute("color") for e in font_tags])
   except StaleElementReferenceException as e:
       print(e)
 

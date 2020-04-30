@@ -111,7 +111,7 @@ def get_element_fonts():
     fonts = webHelper.get_element_fonts()
     result, desc = quantitativeAnalysis(int(acceptable), fonts)
 
-    return {"data": " ".join(fonts), "result": result, "desc": desc, "status": "success"}
+    return {"data": ", ".join(fonts), "result": result, "desc": desc, "status": "success"}
 
 
 """Get unique text colors on page"""
@@ -121,7 +121,7 @@ def get_text_colors():
     colors = webHelper.get_text_colors()
     result, desc = quantitativeAnalysis(int(acceptable), colors)
 
-    return {"data": " ".join(colors), "result": result, "desc": desc, "status": "success"}
+    return {"data": ", ".join(colors), "result": result, "desc": desc, "status": "success"}
 
 
 """Initialize to be used globally"""
@@ -135,13 +135,13 @@ def get_background_colors():
     background_colors = webHelper.get_background_colors()
     result, desc = quantitativeAnalysis(int(acceptable), background_colors)
 
-    return {"data": " ".join(background_colors), "result": result, "desc": desc, "status": "success"}
+    return {"data": ", ".join(background_colors), "result": result, "desc": desc, "status": "success"}
 
 
 """Get quantitative analysis of similar definitions to determine pass/fail"""
 def quantitativeAnalysis(passNum, arr):
     result = "Pass" if len(arr) <= passNum else "Fail"
-    desc = "Number of Different font colors: " + str(len(arr)) + "\nAcceptable Number: " + str(passNum)
+    desc = "Number of Different font colors: " + str(len(arr)) + ", Acceptable Number: " + str(passNum)
 
     return result, desc
 
@@ -164,7 +164,7 @@ def get_nogo_colors(choice):
         return {"data": colors, "result": "Fail", "desc": "data/noGoColors.txt file not found", "status": "success"}
     else:
         if colors:
-            return {"data": " ".join(colors), "result": "Fail", "desc": "No-go colors were found", "status": "success"}
+            return {"data": ", ".join(colors), "result": "Fail", "desc": "No-go colors were found", "status": "success"}
         else:
             return {"data": "None", "result": "Pass", "desc": "No No-go colors were found", "status": "success"}
 
@@ -178,7 +178,7 @@ def get_nogo_text():
     inner_text = webHelper.get_inner_html()
 
     if len(inner_text) > 0:
-        return {"data": " ".join(inner_text), "result": "Fail", "desc": "No-go words were found", "status": "success"}
+        return {"data": ", ".join(inner_text), "result": "Fail", "desc": "No-go words were found", "status": "success"}
     else:
         return {"data": "None", "result": "Pass", "desc": "No No-go words were found", "status": "success"}
 
