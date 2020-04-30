@@ -1,4 +1,4 @@
-import sys, math
+import sys, math, os
 import urllib.error
 from flask import Flask, request, abort, jsonify
 from time import sleep, time
@@ -15,6 +15,26 @@ from helpers import webHelper
 
 app = Flask(__name__)
 
+"""Set environment to development by default"""
+env = "development"
+app.config["ENV"] = env
+
+"""Check if environment is manually set"""
+if "FLASK_ENV" in app.config:
+    env = app.config["FLASK_ENV"]
+
+"""Load configuration variables from config files"""
+if env == "production":
+    app.config.from_object("config.ProductionConfig")
+elif env == "development":
+    app.config.from_object("config.DevelopmentConfig")
+
+"""Load custom configs that not tracked by version control"""
+if os.path.exists("custom_config.py"):
+    app.config.from_object("custom_config.Config")
+
+
+"""Handle errors and return to client if they occur"""
 @app.errorhandler(Exception)
 def handle_invalid_usage(e):
     if isinstance(e, urllib.error.URLError):
@@ -34,6 +54,7 @@ def handle_invalid_usage(e):
             "description": e.description,
         }
     return response
+
 
 @app.route('/')
 def hello_world():
@@ -56,9 +77,11 @@ Must be called before other definitions
 """
 @app.route('/get', methods=['GET'])
 def get_url():
-    url = request.args.get("url", default="https://www.phptravels.net")
-    
-    status, message = webHelper.get_url(url)
+    url = request.args.get("url")
+    if url:
+        status, message = webHelper.get_url(url)
+    else: 
+        abort(400, "Must provide URL")
 
     if status == "success":
         return {"data": message, "status": status}
@@ -94,9 +117,9 @@ def get_element_fonts():
 """Get unique text colors on page"""
 @app.route('/get_text_colors', methods=['GET'])
 def get_text_colors():
-
+    acceptable = request.args.get("acceptable", default=6)
     colors = webHelper.get_text_colors()
-    result, desc = quantitativeAnalysis(10, colors)
+    result, desc = quantitativeAnalysis(int(acceptable), colors)
 
     return {"data": " ".join(colors), "result": result, "desc": desc, "status": "success"}
 
@@ -108,9 +131,9 @@ background_colors = None
 @app.route('/get_background_colors', methods=['GET'])
 def get_background_colors():
     global background_colors
-
+    acceptable = request.args.get("acceptable", default=6)
     background_colors = webHelper.get_background_colors()
-    result, desc = quantitativeAnalysis(10, background_colors)
+    result, desc = quantitativeAnalysis(int(acceptable), background_colors)
 
     return {"data": " ".join(background_colors), "result": result, "desc": desc, "status": "success"}
 

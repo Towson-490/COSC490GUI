@@ -25,12 +25,12 @@ import nltk
 #                                                   #
 #####################################################
 
-"""Initialize driver globally: 'global driver' to be used in definitions"""
+"""Declare driver globally: 'global driver' to be used in definitions"""
 driver = None
 
-"""Initialize test site globally. If not supplied defaults to test_url"""
-test_site = "automationpractice.com/index.php"
-test_url = "https://www." + test_site
+"""Declare test site globally. If not supplied defaults to test_url"""
+test_site = None
+test_url = None
 # Email user@phptravels.com
 # Password demouser
 
@@ -205,8 +205,14 @@ def get_background_colors():
   elements = driver.find_elements_by_css_selector("*")
   
   try:
-    background_colors = [ e.value_of_css_property("background-color") for e in elements ]
-    # 'background' property may contain a set color as well as other properties
+    background_colors = []
+    for e in elements:
+      reg = lambda s: re.findall(r"(rgba?\(\d{1,3},\s\d{1,3},\s\d{1,3},?\s?\d?\.?\d?\))", s)
+      background_colors.append(e.value_of_css_property("background-color"))
+      background_colors.extend(reg(e.value_of_css_property("background")))
+
+      if "gradient" in e.value_of_css_property("background-image"):
+        background_colors.extend(reg(e.value_of_css_property("background-image")))
   except StaleElementReferenceException as e:
       print(e)
 
