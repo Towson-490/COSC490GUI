@@ -3,7 +3,7 @@
 
 <head>
   <meta charset="UTF-8">
-  <title>Add Test</title>
+  <title>Add Test Group</title>
   <link rel="stylesheet" href="../css/bootstrap.min.css">
   <link rel="stylesheet" href="../styles.css">
 </head>
@@ -58,12 +58,14 @@
         </div>
         <div class="modal-body">
           <form>
-            Inputs for values
+            <div id="modal-form" class="form-group">
+              Inputs for values
+            </div>
           </form>
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-          <button type="button" class="btn btn-primary">Update</button>
+          <button type="button" class="btn btn-primary" onclick="updateValues(event)">Update</button>
         </div>
       </div>
     </div>

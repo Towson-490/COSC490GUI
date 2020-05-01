@@ -1,0 +1,46 @@
+[
+  {
+    "routeDesc": "Number of page fonts",
+    "routeSlug": "get_fonts",
+    "desc": "Test consistency",
+    "values": {
+      "acceptable": 6
+    }
+  },
+  {
+    "routeDesc": "Check page text",
+    "routeSlug": "get_nogo_text/text",
+    "desc": "Test terms to avoid"
+  },
+  {
+    "routeDesc": "Number of text colors",
+    "routeSlug": "get_text_colors",
+    "desc": "Test consistency",
+    "values": {
+      "acceptable": 6
+    }
+  },
+  {
+    "routeDesc": "Number of background colors",
+    "routeSlug": "get_background_colors",
+    "desc": "Test consistency",
+    "values": {
+      "acceptable": 6
+    }
+  },
+  {
+    "routeDesc": "Check background colors",
+    "routeSlug": "get_nogo_colors/background",
+    "desc": "Test colors to avoid"
+  },
+  {
+    "routeDesc": "Get average response times",
+    "routeSlug": "get_avg_response",
+    "desc": "Test time (ms) between domain links",
+    "values": {
+      "acceptable": 10000,
+      "backend": 5000,
+      "frontend": 5000
+    }
+  }
+]
