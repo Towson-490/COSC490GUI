@@ -1,7 +1,7 @@
 const { ipcRenderer } = require('electron');
 let tests = require("./scripts/tests.json")
 
-// If local storage is available, and tests is not stored, store for editing
+// If local storage is available, and tests is not stored, store for persistence
 if (typeof(Storage) !== "undefined") {
   if (!localStorage.getItem("tests")){
     localStorage.setItem("tests", JSON.stringify(tests))

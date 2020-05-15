@@ -5,7 +5,7 @@ const config = require('../config.json')
 // Get environment, set as development by default
 const environment = process.env.NODE_ENV || 'development';
 // Set global config based on environment
-const gConfig = config[environment]
+const gConfig = config[environment];
 // Set host for queries based on global config
 const url = gConfig.api_host+":"+gConfig.api_port;
 
@@ -19,6 +19,20 @@ let initiated = false;
 // To store routes when received by addTestWindow
 let testRoutes = {};
 
+let testGroups = {};
+// If local storage is available, and test_groups is not stored, store for persistence
+if (typeof (Storage) !== "undefined") {
+    if (localStorage.getItem("test_groups")) {
+        testGroups = JSON.parse(localStorage.getItem("test_groups"));
+        console.log("****Starting storage****",testGroups);
+        for(group in testGroups){
+            addTest(testGroups[group]);
+        }
+    }
+} else {
+    // No web storage Support.
+}
+
 // Create addTestWindow on create test click
 function callAddWindow() {
     // Get div #content to alert user
@@ -26,7 +40,7 @@ function callAddWindow() {
 
     // Create data object to send with ipcRenderer to app.js
     let data = {};
-    console.log(data);
+    console.log("****Data Passed to Add Window****",data);
 
     // Send data to ipcMain for addTestWindow
     ipcRenderer.send('add-window', data);
@@ -39,11 +53,18 @@ ipcRenderer.on('close-addTestWindow', (e) => {
 
 // Add test element to mainWindow on add test click from addTestWindow
 ipcRenderer.on('add-test', function (e, data) {
+    addTest(data);
+    console.log("****Groups After Add***",testGroups);
+    replaceAlert("new-group-alert", "success", "Added test");
+    closeAlert("new-group-alert", 1000);
+});
+
+function addTest(data){
     // Get tests div to append test
     let allTests = document.getElementById('tests');
 
     // Create table row for test 
-    let n = ++count
+    let n = count+1
     let label = data.label;
     const testRow = document.createElement('tr');
     testRow.id = `${label}-${n}`;
@@ -93,17 +114,20 @@ ipcRenderer.on('add-test', function (e, data) {
     <path fill-rule="evenodd" d="M14.5 3a1 1 0 01-1 1H13v9a2 2 0 01-2 2H5a2 2 0 01-2-2V4h-.5a1 1 0 01-1-1V2a1 1 0 011-1H6a1 1 0 011-1h2a1 1 0 011 1h3.5a1 1 0 011 1v1zM4.118 4L4 4.059V13a1 1 0 001 1h6a1 1 0 001-1V4.059L11.882 4H4.118zM2.5 3V2h11v1h-11z" clip-rule="evenodd"/>
     </svg> Remove</a>
     </td>`).appendTo(`#${label}-${n}`);
-    $(`#delete-${label}-${n}`).on("click", (e)=> {
+    $(`#delete-${label}-${n}`).on("click", (e) => {
         e.stopPropagation();
+        delete testGroups[`${label}-${n}`]
+        localStorage.setItem("test_groups", JSON.stringify(testGroups))
         $(`#${label}-${n}`).remove();
-        if($("#tests").children().length == 0){
+        if ($("#tests").children().length == 0) {
             count = 0;
         }
     })
 
-    replaceAlert("new-group-alert", "success", "Added test");
-    closeAlert("new-group-alert", 1000);
-});
+    testGroups[testRow.id] = data;
+    localStorage.setItem("test_groups", JSON.stringify(testGroups))
+    count++;
+}
 
 const updateProgress = (width) => {
     $('#progress-bar').css('width', width + '%');
